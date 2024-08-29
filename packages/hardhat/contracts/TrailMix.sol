@@ -236,8 +236,21 @@ contract TrailMix is ReentrancyGuard {
 		s_tslThreshold = newThreshold;
 	}
 
+
+	function getEthUsdPrice() public view returns (uint256) {
+		(
+			,
+			/* uint80 roundID */ int256 price /* uint startedAt */ /* uint timeStamp */ /* uint80 answeredInRound */,
+			,
+			,
+
+		) = s_wethUsdPriceFeed.latestRoundData();
+		uint8 decimals = s_wethUsdPriceFeed.decimals();
+		return uint256(price) * (10 ** (18 - decimals)); // standardizes price to 18 decimals
+	}
+
 	/**
-	 * @notice Gets the latest price of the ERC20 token in USD.
+	 * @notice Gets the latest price of the ERC20 token in USD. Only used for triggering upkeep actions
 	 * @dev Uses the Uniswap Oracle to get the latest price using TWAP (time-weighted average price) data for the past 5 minutes. 
 	 * Uses Chainlink's price feed to fetch eth price
 	 * @return The latest price of the ERC20 token in stablecoins.
@@ -257,14 +270,14 @@ contract TrailMix is ReentrancyGuard {
 	}
 
 	/**
-	 * @notice Gets the exact price of the ERC20 token in its paired asset.
-	 * @dev used for calculating swap parameters
-	 * @return The latest price of the ERC20 token in reference to its paired assets.
+	 * @notice Gets the exact price of the ERC20 token in its paired asset. Used for calculating swap parameters.
+	 * @dev gets price at the current block timestamp of asset in reference to its paired asset
+	 * @return The latest price of the ERC20 token in reference to its paired asset.
 	 */
-	function getExactPrice() public view returns (uint256) {
+	function getExactPrice(address token) public view returns (uint256) {
 		uint256 amountOut = s_uniswapOracle.estimateAmountOut(
 			s_uniswapPool,
-			s_erc20Token,
+			token,
 			1e18, // number of decimals for erc20 token
 			1
 		);
@@ -276,29 +289,22 @@ contract TrailMix is ReentrancyGuard {
 		return amountOut;
 	}
 
-	function getEthUsdPrice() public view returns (uint256) {
-		(
-			,
-			/* uint80 roundID */ int256 price /* uint startedAt */ /* uint timeStamp */ /* uint80 answeredInRound */,
-			,
-			,
-
-		) = s_wethUsdPriceFeed.latestRoundData();
-		uint8 decimals = s_wethUsdPriceFeed.decimals();
-		return uint256(price) * (10 ** (18 - decimals)); // standardizes price to 18 decimals
-	}
-
 	/**
 	 * @notice Swaps the user's ERC20 tokens for stablecoins on Uniswap.
 	 * @dev only callable by the manager contract. Non-reentrant.
 	 * @param amount The amount of the ERC20 token to swap.
 	 */
-	function swapOnUniswap(uint256 amount) public onlyManager nonReentrant {
+	function swapOnUniswap(
+		address tokenIn,
+		address tokenOut,
+		uint256 amount
+		
+		) public onlyManager nonReentrant {
 		//swap ERC20 tokens for stablecoin on uniswap
 		//need to approve uniswap to spend ERC20 tokens
 
 		//gets the most up to date price to calculate slippage
-		uint256 currentPrice = getExactPrice();
+		uint256 currentPrice = getExactPrice(tokenIn);
 		uint256 minAmountOut;
 
 		uint256 feeBps = s_poolFee; //take into account the pool fees
@@ -328,14 +334,14 @@ contract TrailMix is ReentrancyGuard {
 				amountOutMinimum: minAmountOut,
 				sqrtPriceLimitX96: 0
 			});
-		s_uniswapRouter.exactInputSingle(params);
+		uint256 amountOut = s_uniswapRouter.exactInputSingle(params);
 
-		uint256 amountRecieved = IERC20withDecimals(s_stablecoin).balanceOf(
-			address(this)
-		);
-		s_stablecoinBalance += amountRecieved;
-		s_exitPrice = currentPrice;
-		state = ContractState.Claimable;
+		//TRACK BALANCE OF STABLECOIN AND BASE TOKEN IN CONTRACT
+		if (tokenIn === s_stablecoin) {
+			s_erc20Balance += amountOut;
+		} else {
+			s_stablecoinBalance += amountOut;
+		}	
 	}
 
 	/**
