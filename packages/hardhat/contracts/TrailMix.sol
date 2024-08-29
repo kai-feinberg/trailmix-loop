@@ -5,6 +5,8 @@ pragma abicoder v2;
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import { ISwapRouter } from "./ISwapRouter.sol";
 import { IERC20withDecimals } from "./IERC20withDecimals.sol";
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+
 
 // import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -42,6 +44,11 @@ contract TrailMix is ReentrancyGuard {
 	uint8 private s_stablecoinDecimals; //number of decimals the stablecoin has
 	uint8 private s_erc20TokenDecimals;
 
+	AggregatorV3Interface private s_EthUSDPriceFeed;
+	bool private s_wethPair; //indicates if the pair is against WETH or USD
+	// if against weth then we will use the eth price feed to calculate the price of the asset in usd
+
+
 	//stores current state of contract
 	enum ContractState {
 		Uninitialized,
@@ -61,7 +68,10 @@ contract TrailMix is ReentrancyGuard {
 		address _uniswapOracle,
 		uint256 _trailAmount,
 		uint256 granularity,
-		uint24 _poolFee
+		uint24 _poolFee,
+		address _ethUsdPriceFeed,
+		bool _wethPair
+
 	) {
 		i_manager = _manager;
 		i_creator = _creator;
@@ -80,6 +90,10 @@ contract TrailMix is ReentrancyGuard {
 		state = ContractState.Uninitialized;
 		s_stablecoinDecimals = IERC20withDecimals(_stablecoin).decimals();
 		s_erc20TokenDecimals = IERC20withDecimals(_erc20Token).decimals();
+		s_EthUSDPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
+
+		s_wethPair = s_wethPair
+
 	}
 
 	modifier onlyManager() {
@@ -223,8 +237,9 @@ contract TrailMix is ReentrancyGuard {
 	}
 
 	/**
-	 * @notice Gets the latest price of the ERC20 token in stablecoins.
-	 * @dev Uses the Uniswap Oracle to get the latest price using TWAP (time-weighted average price) data for the past 5 minutes
+	 * @notice Gets the latest price of the ERC20 token in USD.
+	 * @dev Uses the Uniswap Oracle to get the latest price using TWAP (time-weighted average price) data for the past 5 minutes. 
+	 * Uses Chainlink's price feed to fetch eth price
 	 * @return The latest price of the ERC20 token in stablecoins.
 	 */
 	function getTwapPrice() public view returns (uint256) {
@@ -234,9 +249,18 @@ contract TrailMix is ReentrancyGuard {
 			1e18, // number of decimals for erc20 token
 			300 // 5 minutes of price data (300 seconds)
 		);
+		if (s_wethPair){
+			uint256 ethPrice = getEthUsdPrice()
+			return amountOut*ethPrice/10**18
+		}
 		return amountOut;
 	}
 
+	/**
+	 * @notice Gets the exact price of the ERC20 token in its paired asset.
+	 * @dev used for calculating swap parameters
+	 * @return The latest price of the ERC20 token in reference to its paired assets.
+	 */
 	function getExactPrice() public view returns (uint256) {
 		uint256 amountOut = s_uniswapOracle.estimateAmountOut(
 			s_uniswapPool,
@@ -244,7 +268,24 @@ contract TrailMix is ReentrancyGuard {
 			1e18, // number of decimals for erc20 token
 			1
 		);
+
+		if (s_wethPair){
+			uint256 ethPrice = getEthUsdPrice()
+			return amountOut*ethPrice/10**18
+		}
 		return amountOut;
+	}
+
+	function getEthUsdPrice() public view returns (uint256) {
+		(
+			,
+			/* uint80 roundID */ int256 price /* uint startedAt */ /* uint timeStamp */ /* uint80 answeredInRound */,
+			,
+			,
+
+		) = s_wethUsdPriceFeed.latestRoundData();
+		uint8 decimals = s_wethUsdPriceFeed.decimals();
+		return uint256(price) * (10 ** (18 - decimals)); // standardizes price to 18 decimals
 	}
 
 	/**
