@@ -228,7 +228,7 @@ contract TrailMixManager is ReentrancyGuard {
 		bool updateNeeded = false;
 		bytes memory updateData;
 		for (uint256 i = 0; i < activeStrategies.length; i++) {
-			(bool sell, bool update, uint256 newThreshold) = ITrailMix(
+			(bool buy, bool sell, bool update, uint256 newThreshold) = ITrailMix(
 				activeStrategies[i]
 			).checkUpkeepNeeded();
 
@@ -244,6 +244,20 @@ contract TrailMixManager is ReentrancyGuard {
 						newThreshold
 					)
 				);
+			} else if (buy){
+				// Prioritize swap action if needed
+				return (
+					true,
+					abi.encodeWithSelector(
+						this.performUpkeep.selector,
+						activeStrategies[i],
+						buy,
+						sell,
+						update,
+						newThreshold
+					)
+				);
+
 			} else if (update) {
 				// If no swap needed, check for threshold update
 				// Note: This approach only encodes action for the first strategy needing an action.
@@ -252,6 +266,7 @@ contract TrailMixManager is ReentrancyGuard {
 					updateData = abi.encodeWithSelector(
 						this.performUpkeep.selector,
 						activeStrategies[i],
+						buy,
 						sell,
 						update,
 						newThreshold
@@ -289,14 +304,11 @@ contract TrailMixManager is ReentrancyGuard {
 		// Implement logic to perform TSL (e.g., swap to stablecoin) when conditions are met
 
 		if (sell) {
-			//call trigger function to sell on uniswap
+			//store balance before the sell occurs
 			uint256 s_erc20Balance = ITrailMix(strategy).getERC20Balance();
-			ITrailMix(strategy).swapOnUniswap(s_erc20Balance);
 
-			//deactivate TSL
-			if (isActiveStrategy[strategy]) {
-				removeStrategy(strategy);
-			}
+			//call trigger function to sell on uniswap
+			ITrailMix(strategy).executeTSL();
 
 			//emit swap event
 			emit SwapExecuted(
@@ -308,7 +320,24 @@ contract TrailMixManager is ReentrancyGuard {
 				ITrailMix(strategy).getStablecoinAddress(),
 				block.timestamp
 			);
-		} else if (updateThreshold) {
+		} else if (buy){
+			uint256 s_stablecoinBalance = ITrailMix(strategy).getStablecoinBalance();
+
+			ITrailMix(strategy).executeLimitBuy();
+
+			//emit swap event
+			emit SwapExecuted(
+				strategy,
+				ITrailMix(strategy).getCreator(),
+				s_stablecoinBalance,
+				ITrailMix(strategy).getERC20Balance(),
+				ITrailMix(strategy).getStablecoinAddress(),
+				ITrailMix(strategy).getERC20TokenAddress(),
+				block.timestamp
+			);
+		}
+		
+		else if (updateThreshold) {
 			uint256 oldThreshold = ITrailMix(strategy).getTSLThreshold();
 
 			//call updateThreshold function to update the threshold
