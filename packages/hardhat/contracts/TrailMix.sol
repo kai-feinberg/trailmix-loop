@@ -1,4 +1,10 @@
 // SPDX-License-Identifier: MIT
+
+
+//TODO 
+// CHANGE PROFIT TRACKING
+// LIMIT BUY AND TRAILING STOP SWAP FUNCTIONS
+
 pragma solidity 0.8.20;
 pragma abicoder v2;
 
@@ -38,9 +44,7 @@ contract TrailMix is ReentrancyGuard {
 	uint24 private s_poolFee;
 
 	//USED FOR PROFIT TRACKING
-	uint256 private s_weightedEntryPrice;
-	uint256 private s_totalDeposited; // Total amount deposited in ERC20
-	uint256 private s_exitPrice;
+	uint256 private s_depositValue; // Value of the deposit in USD
 	uint8 private s_stablecoinDecimals; //number of decimals the stablecoin has
 	uint8 private s_erc20TokenDecimals;
 
@@ -49,11 +53,15 @@ contract TrailMix is ReentrancyGuard {
 	// if against weth then we will use the eth price feed to calculate the price of the asset in usd
 
 
+	uint256 private s_limitBuyPrice;
+	uint256 private s_limitDelay; // how long the before the limit order will be placed 
+
+
 	//stores current state of contract
 	enum ContractState {
 		Uninitialized,
-		Active,
-		Claimable,
+		TrailingStop,
+		LimitBuy,
 		Inactive
 	}
 	ContractState private state;
@@ -114,7 +122,7 @@ contract TrailMix is ReentrancyGuard {
 			revert InvalidAmount();
 		}
 		if (
-			state == ContractState.Claimable || state == ContractState.Inactive
+			state == ContractState.Inactive
 		) {
 			revert StrategyNotActive();
 		}
@@ -134,16 +142,11 @@ contract TrailMix is ReentrancyGuard {
 			// If TSL is not active, set the threshold and activate TSL
 			s_tslThreshold = (tslThreshold * (100 - s_trailAmount)) / 100;
 
-			state = ContractState.Active;
+			state = ContractState.TrailingStop;
 		}
 
 		//store price at time of deposit
-		uint256 currentPrice = getExactPrice();
-
-		s_weightedEntryPrice =
-			(s_weightedEntryPrice * s_totalDeposited + currentPrice * amount) /
-			(s_totalDeposited + amount);
-		s_totalDeposited += amount;
+		s_depositValue += getTwapPrice() * amount;
 	}
 
 	/**
@@ -183,12 +186,7 @@ contract TrailMix is ReentrancyGuard {
 			state = ContractState.Inactive;
 		} else {
 			revert InvalidToken();
-		}
-
-		//set exit price at withdrawal if not already set
-		if (s_exitPrice == 0) {
-			s_exitPrice = getExactPrice();
-		}
+		}		
 	}
 
 	/**
@@ -344,6 +342,41 @@ contract TrailMix is ReentrancyGuard {
 		}	
 	}
 
+
+	/**
+	 * @notice Swaps asset into stable token on Uniswap and sets the contract into the buying state.
+	 * @dev only callable by the manager contract. Non-reentrant.
+	 */
+	function executeTSL() external onlyManager nonReentrant {
+		require(
+			state == ContractState.TrailingStop,
+			"Not in TrailingStop state"
+		);
+		uint256 amountOut =swapOnUniswap(s_erc20Token, s_stablecoin, s_erc20Balance);
+		s_stablecoinBalance += amountOut;
+		s_erc20Balance = 0;
+
+		s_limitBuyPrice = getTwapPrice(s_erc20Token); // price that the erc20 token was sold at
+
+		state = ContractState.LimitBuy;
+	}
+
+	function executeLimitBuy() external onlyManager nonReentrant {
+		require(state == ContractState.LimitBuy, "Not in LimitBuy state");
+		uint256 amountOut = swapOnUniswap(s_stablecoin, s_erc20Token, s_stablecoinBalance);
+		s_erc20Balance += amountOut;
+		s_stablecoinBalance = 0;
+
+		
+		currentPrice = getTwapPrice(s_erc20Token);
+		s_tslThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
+
+		//reset limit order parameters
+		s_limitBuyPrice = 0;
+
+		state = ContractState.TrailingStop;
+	}
+
 	/**
 	 * @notice Activates slippage protection for token swaps.
 	 * @dev Can only be called by the contract owner.
@@ -404,35 +437,33 @@ contract TrailMix is ReentrancyGuard {
 		return s_weightedEntryPrice;
 	}
 
-	function getExitPrice() public view returns (uint256) {
-		return s_exitPrice;
-	}
+	
 
 	function getState() public view returns (string memory) {
 		if (state == ContractState.Uninitialized) return "Uninitialized";
-		if (state == ContractState.Active) return "Active";
-		if (state == ContractState.Claimable) return "Claimable";
+		if (state == ContractState.LimitBuy) return "LimitBuy";
+		if (state == ContractState.TrailingStop) return "TrailingStop";
 		if (state == ContractState.Inactive) return "Inactive";
 		return "Unknown"; // fallback in case of an unexpected state
 	}
 
-	function getProfit() public view returns (int256) {
-		uint256 scalingFactor = 10 ** uint256(s_erc20TokenDecimals);
+	// function getProfit() public view returns (int256) {
+	// 	uint256 scalingFactor = 10 ** uint256(s_erc20TokenDecimals);
 
-		if (state == ContractState.Active) {
-			uint256 livePrice = getExactPrice();
-			uint256 currentValue = (s_erc20Balance * livePrice) / scalingFactor;
-			uint256 totalCost = (s_totalDeposited * s_weightedEntryPrice) /
-				scalingFactor;
-			return int256(currentValue) - int256(totalCost);
-		} else if (
-			state == ContractState.Claimable || state == ContractState.Inactive
-		) {
-			uint256 profit = (s_totalDeposited *
-				(s_exitPrice - s_weightedEntryPrice)) / scalingFactor;
-			return int256(profit);
-		} else {
-			return 0;
-		}
-	}
+	// 	if (state == ContractState.Active) {
+	// 		uint256 livePrice = getExactPrice();
+	// 		uint256 currentValue = (s_erc20Balance * livePrice) / scalingFactor;
+	// 		uint256 totalCost = (s_totalDeposited * s_weightedEntryPrice) /
+	// 			scalingFactor;
+	// 		return int256(currentValue) - int256(totalCost);
+	// 	} else if (
+	// 		state == ContractState.Claimable || state == ContractState.Inactive
+	// 	) {
+	// 		uint256 profit = (s_totalDeposited *
+	// 			(s_exitPrice - s_weightedEntryPrice)) / scalingFactor;
+	// 		return int256(profit);
+	// 	} else {
+	// 		return 0;
+	// 	}
+	// }
 }
