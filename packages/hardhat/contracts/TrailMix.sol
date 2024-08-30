@@ -1,10 +1,4 @@
 // SPDX-License-Identifier: MIT
-
-
-//TODO 
-// CHANGE PROFIT TRACKING
-// LIMIT BUY AND TRAILING STOP SWAP FUNCTIONS
-
 pragma solidity 0.8.20;
 pragma abicoder v2;
 
@@ -145,7 +139,7 @@ contract TrailMix is ReentrancyGuard {
 			state = ContractState.TrailingStop;
 		}
 
-		//store price at time of deposit
+		//store usd value at time of deposit
 		s_depositValue += getTwapPrice() * amount;
 	}
 
@@ -191,38 +185,51 @@ contract TrailMix is ReentrancyGuard {
 
 	/**
 	 * @notice Checks if upkeep is needed based on TSL conditions.
-	 * @return A tuple of three values: a boolean indicating if selling is needed, a boolean indicating if the threshold should be updated, and the new threshold value.
+	 * @return A tuple of four values: a boolean indicating if limit buy should be triggered, a boolean indicating if tsl should be triggered, a boolean indicating if the threshold should be updated, and the new threshold value.
 	 */
 	function checkUpkeepNeeded() external view returns (bool, bool, uint256) {
-		// Implement logic to check if TSL conditions are met
-		uint256 currentPrice = getTwapPrice();
-		uint256 exactPrice = getExactPrice();
+		
+		// If contract is in trailing stop state then check if it needs to be updated or executed
+		if (state == ContractState.trailingStop) {
+			uint256 currentPrice = getTwapPrice();
+			uint256 exactPrice = getExactPrice(s_erc20Token);
 
-		bool triggerSell = false;
-		bool updateThreshold = false;
-		uint256 newThreshold = 0;
+			bool triggerSell = false;
+			bool updateThreshold = false;
+			uint256 newThreshold = 0;
 
-		// Calculate 10% price range bounds
-		uint256 lowerBound = (currentPrice * 90) / 100;
-		uint256 upperBound = (currentPrice * 110) / 100;
-		//calculates the old all time high price based on the threshold
-		uint256 oldCurrentPrice = (s_tslThreshold * 100) /
-			(100 - s_trailAmount);
+			// Calculate 10% price range bounds
+			uint256 lowerBound = (currentPrice * 90) / 100;
+			uint256 upperBound = (currentPrice * 110) / 100;
+			//calculates the old all time high price based on the threshold
+			uint256 oldCurrentPrice = (s_tslThreshold * 100) /
+				(100 - s_trailAmount);
 
-		//determines the price that is granularity% higher than the old stored price
-		uint256 minPriceForUpdate = (oldCurrentPrice * (100 + s_granularity)) /
-			100;
-		//if new price is less than the current threshold then trigger TSL
-		if (exactPrice >= lowerBound && exactPrice <= upperBound) {
-			if (currentPrice < s_tslThreshold) {
-				//trigger TSL
-				triggerSell = true;
-			} else if (currentPrice > minPriceForUpdate) {
-				updateThreshold = true;
-				newThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
+			//determines the price that is granularity% higher than the old stored price
+			uint256 minPriceForUpdate = (oldCurrentPrice * (100 + s_granularity)) /
+				100;
+			//if new price is less than the current threshold then trigger TSL
+			if (exactPrice >= lowerBound && exactPrice <= upperBound) {
+				if (currentPrice < s_tslThreshold) {
+					//trigger TSL
+					triggerSell = true;
+				} else if (currentPrice > minPriceForUpdate) {
+					updateThreshold = true;
+					newThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
+				}
 			}
+			return (false, triggerSell, updateThreshold, newThreshold);
 		}
-		return (triggerSell, updateThreshold, newThreshold);
+
+		else if (state == ContractState.LimitBuy){
+			uint256 currentPrice = getTwapPrice();
+			bool limitTrigger = false;
+			if (currentPrice < s_limitBuyPrice && block.timestamp > s_limitDelay){
+				limitTrigger = true;
+			}
+
+			return (limitTrigger, false, false, 0);
+		}
 	}
 
 	/**
@@ -356,8 +363,9 @@ contract TrailMix is ReentrancyGuard {
 		s_stablecoinBalance += amountOut;
 		s_erc20Balance = 0;
 
-		s_limitBuyPrice = getTwapPrice(s_erc20Token); // price that the erc20 token was sold at
+		s_limitBuyPrice = getExactPrice(s_erc20Token); // price that the erc20 token was sold at
 
+		s_limitDelay = block.timestamp + 1 days; //set the limit order to be placed in 1 day
 		state = ContractState.LimitBuy;
 	}
 
@@ -368,7 +376,7 @@ contract TrailMix is ReentrancyGuard {
 		s_stablecoinBalance = 0;
 
 		
-		currentPrice = getTwapPrice(s_erc20Token);
+		currentPrice = getTwapPrice();
 		s_tslThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
 
 		//reset limit order parameters
@@ -447,23 +455,4 @@ contract TrailMix is ReentrancyGuard {
 		return "Unknown"; // fallback in case of an unexpected state
 	}
 
-	// function getProfit() public view returns (int256) {
-	// 	uint256 scalingFactor = 10 ** uint256(s_erc20TokenDecimals);
-
-	// 	if (state == ContractState.Active) {
-	// 		uint256 livePrice = getExactPrice();
-	// 		uint256 currentValue = (s_erc20Balance * livePrice) / scalingFactor;
-	// 		uint256 totalCost = (s_totalDeposited * s_weightedEntryPrice) /
-	// 			scalingFactor;
-	// 		return int256(currentValue) - int256(totalCost);
-	// 	} else if (
-	// 		state == ContractState.Claimable || state == ContractState.Inactive
-	// 	) {
-	// 		uint256 profit = (s_totalDeposited *
-	// 			(s_exitPrice - s_weightedEntryPrice)) / scalingFactor;
-	// 		return int256(profit);
-	// 	} else {
-	// 		return 0;
-	// 	}
-	// }
 }
