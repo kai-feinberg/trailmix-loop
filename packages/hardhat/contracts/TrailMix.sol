@@ -42,7 +42,7 @@ contract TrailMix is ReentrancyGuard {
 	uint8 private s_stablecoinDecimals; //number of decimals the stablecoin has
 	uint8 private s_erc20TokenDecimals;
 
-	AggregatorV3Interface private s_EthUSDPriceFeed;
+	AggregatorV3Interface private s_ethUsdPriceFeed;
 	bool private s_wethPair; //indicates if the pair is against WETH or USD
 	// if against weth then we will use the eth price feed to calculate the price of the asset in usd
 
@@ -92,9 +92,9 @@ contract TrailMix is ReentrancyGuard {
 		state = ContractState.Uninitialized;
 		s_stablecoinDecimals = IERC20withDecimals(_stablecoin).decimals();
 		s_erc20TokenDecimals = IERC20withDecimals(_erc20Token).decimals();
-		s_EthUSDPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
+		s_ethUsdPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
 
-		s_wethPair = s_wethPair
+		s_wethPair = s_wethPair;
 
 	}
 
@@ -187,10 +187,10 @@ contract TrailMix is ReentrancyGuard {
 	 * @notice Checks if upkeep is needed based on TSL conditions.
 	 * @return A tuple of four values: a boolean indicating if limit buy should be triggered, a boolean indicating if tsl should be triggered, a boolean indicating if the threshold should be updated, and the new threshold value.
 	 */
-	function checkUpkeepNeeded() external view returns (bool, bool, uint256) {
+	function checkUpkeepNeeded() external view returns (bool, bool, bool, uint256) {
 		
 		// If contract is in trailing stop state then check if it needs to be updated or executed
-		if (state == ContractState.trailingStop) {
+		if (state == ContractState.TrailingStop) {
 			uint256 currentPrice = getTwapPrice();
 			uint256 exactPrice = getExactPrice(s_erc20Token);
 
@@ -249,8 +249,8 @@ contract TrailMix is ReentrancyGuard {
 			,
 			,
 
-		) = s_wethUsdPriceFeed.latestRoundData();
-		uint8 decimals = s_wethUsdPriceFeed.decimals();
+		) = s_ethUsdPriceFeed.latestRoundData();
+		uint8 decimals = s_ethUsdPriceFeed.decimals();
 		return uint256(price) * (10 ** (18 - decimals)); // standardizes price to 18 decimals
 	}
 
@@ -268,8 +268,8 @@ contract TrailMix is ReentrancyGuard {
 			300 // 5 minutes of price data (300 seconds)
 		);
 		if (s_wethPair){
-			uint256 ethPrice = getEthUsdPrice()
-			return amountOut*ethPrice/10**18
+			uint256 ethPrice = getEthUsdPrice();
+			return amountOut*ethPrice/10**18;
 		}
 		return amountOut;
 	}
@@ -288,8 +288,8 @@ contract TrailMix is ReentrancyGuard {
 		);
 
 		if (s_wethPair){
-			uint256 ethPrice = getEthUsdPrice()
-			return amountOut*ethPrice/10**18
+			uint256 ethPrice = getEthUsdPrice();
+			return amountOut*ethPrice/10**18;
 		}
 		return amountOut;
 	}
@@ -304,7 +304,7 @@ contract TrailMix is ReentrancyGuard {
 		address tokenOut,
 		uint256 amount
 		
-		) public onlyManager nonReentrant {
+		) public onlyManager nonReentrant returns (uint256) {
 		//swap ERC20 tokens for stablecoin on uniswap
 		//need to approve uniswap to spend ERC20 tokens
 
@@ -342,11 +342,12 @@ contract TrailMix is ReentrancyGuard {
 		uint256 amountOut = s_uniswapRouter.exactInputSingle(params);
 
 		//TRACK BALANCE OF STABLECOIN AND BASE TOKEN IN CONTRACT
-		if (tokenIn === s_stablecoin) {
+		if (tokenIn == s_stablecoin) {
 			s_erc20Balance += amountOut;
 		} else {
 			s_stablecoinBalance += amountOut;
 		}	
+		return amountOut;
 	}
 
 
@@ -376,7 +377,7 @@ contract TrailMix is ReentrancyGuard {
 		s_stablecoinBalance = 0;
 
 		
-		currentPrice = getTwapPrice();
+		uint256 currentPrice = getTwapPrice();
 		s_tslThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
 
 		//reset limit order parameters
@@ -441,11 +442,9 @@ contract TrailMix is ReentrancyGuard {
 		return s_uniswapPool;
 	}
 
-	function getWeightedEntryPrice() public view returns (uint256) {
-		return s_weightedEntryPrice;
+	function getDepositValue() public view returns (uint256) {
+		return s_depositValue;
 	}
-
-	
 
 	function getState() public view returns (string memory) {
 		if (state == ContractState.Uninitialized) return "Uninitialized";

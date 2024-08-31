@@ -90,7 +90,9 @@ contract TrailMixManager is ReentrancyGuard {
 		address _uniswapOracle,
 		uint256 _trailAmount,
 		uint256 _granularity,
-		uint24 _poolFee
+		uint24 _poolFee,
+		address _ethUsdPriceFeed,
+		bool _wethPair
 	) public {
 		// Deploy the TrailMix contract
 		TrailMix newTrailMix = new TrailMix(
@@ -103,7 +105,9 @@ contract TrailMixManager is ReentrancyGuard {
 			_uniswapOracle,
 			_trailAmount,
 			_granularity,
-			_poolFee
+			_poolFee,
+			_ethUsdPriceFeed,
+			_wethPair
 		);
 
 		// Store the contract address in the userContracts mapping
@@ -152,7 +156,7 @@ contract TrailMixManager is ReentrancyGuard {
 		emit FundsDeposited(
 			msg.sender,
 			_strategy,
-			ITrailMix(_strategy).getExactPrice(),
+			ITrailMix(_strategy).getExactPrice(erc20TokenAddress),
 			_amount,
 			ITrailMix(_strategy).getERC20TokenAddress(),
 			block.timestamp,
@@ -288,15 +292,17 @@ contract TrailMixManager is ReentrancyGuard {
 	 */
 	function performUpkeep(
 		address strategy,
+		bool buy,
 		bool sell,
 		bool updateThreshold,
 		uint256 newThreshold
 	) external onlyAuthorized {
-		_performUpkeep(strategy, sell, updateThreshold, newThreshold);
+		_performUpkeep(strategy, buy, sell, updateThreshold, newThreshold);
 	}
 
 	function _performUpkeep(
 		address strategy,
+		bool buy,
 		bool sell,
 		bool updateThreshold,
 		uint256 newThreshold
