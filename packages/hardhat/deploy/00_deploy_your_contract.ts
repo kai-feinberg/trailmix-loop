@@ -46,7 +46,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
       "1", //granularity
       "3000", //pool fee
 
-      "0xb7B9A39CC63f856b90B364911CC324dC46aC1770", //optimism eth price feed
+      "0x13e3Ee699D1909E989722E753853AE30b17e08c5", //optimism eth price feed
 
       "true" //pool against eth
 

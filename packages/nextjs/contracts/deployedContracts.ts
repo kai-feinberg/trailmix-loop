@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   10: {
     TrailMix: {
-      address: "0x97D522f3a1739505e1d0B787A2A6caD4730e937f",
+      address: "0x4F630383cD6dF958d581F812Ccaa04Be918A6C37",
       abi: [
         {
           inputs: [
