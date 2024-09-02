@@ -35,7 +35,7 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
     [onChange],
   );
 
-  // Runs only when reFocus prop is passed, useful for setting the cursor
+  // Runs only when reFocus prop is passed, usefull for setting the cursor
   // at the end of the input. Example AddressInput
   const onFocus = (e: FocusEvent<HTMLInputElement, Element>) => {
     if (reFocus !== undefined) {
@@ -50,7 +50,7 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
     <div className={`flex border-2 border-base-300 bg-base-200 rounded-full text-accent ${modifier}`}>
       {prefix}
       <input
-        className="input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+        className="input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400 bg-transparent"
         placeholder={placeholder}
         name={name}
         value={value?.toString()}

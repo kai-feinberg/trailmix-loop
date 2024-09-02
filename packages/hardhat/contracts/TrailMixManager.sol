@@ -243,6 +243,7 @@ contract TrailMixManager is ReentrancyGuard {
 					abi.encodeWithSelector(
 						this.performUpkeep.selector,
 						activeStrategies[i],
+						buy,
 						sell,
 						update,
 						newThreshold

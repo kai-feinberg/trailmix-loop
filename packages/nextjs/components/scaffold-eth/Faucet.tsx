@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Address as AddressType, createWalletClient, http, parseEther } from "viem";
 import { hardhat } from "viem/chains";
-import { useAccount } from "wagmi";
+import { useNetwork } from "wagmi";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { Address, AddressInput, Balance, EtherInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
@@ -26,7 +26,7 @@ export const Faucet = () => {
   const [faucetAddress, setFaucetAddress] = useState<AddressType>();
   const [sendValue, setSendValue] = useState("");
 
-  const { chain: ConnectedChain } = useAccount();
+  const { chain: ConnectedChain } = useNetwork();
 
   const faucetTxn = useTransactor(localWalletClient);
 
@@ -55,7 +55,7 @@ export const Faucet = () => {
   }, []);
 
   const sendETH = async () => {
-    if (!faucetAddress || !inputAddress) {
+    if (!faucetAddress) {
       return;
     }
     try {
@@ -64,6 +64,7 @@ export const Faucet = () => {
         to: inputAddress,
         value: parseEther(sendValue as `${number}`),
         account: faucetAddress,
+        chain: hardhat,
       });
       setLoading(false);
       setInputAddress(undefined);

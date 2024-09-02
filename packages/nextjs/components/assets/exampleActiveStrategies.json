@@ -1,0 +1,95 @@
+[
+    {
+        "asset": {
+            "name": "Brett",
+            "symbol": "BRETT",
+            "decimals": 18,
+            "logoURI": "https://www.basetokenstore.com/_next/image?url=https%3A%2F%2Fcoin-images.coingecko.com%2Fcoins%2Fimages%2F35529%2Flarge%2F1000050750.png%3F1709031995&w=128&q=75",
+            "pool": "0x76Bf0abD20f1e0155Ce40A62615a90A709a6C3D8",
+            "poolFee": "3000",
+            "pooledAgainst": "USDC",
+            "coinGeckoId": "BRETT"
+        },
+        "contractAddress": "0xb45996291F7D22fA743816aDE8b360B0A6f244Ed",
+        "erc20Balance": "0",
+        "balanceInUsd": "7.89",
+
+        "erc20Asset": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+        "twapPrice": "44750887171409",
+        "trailAmount": "20",
+        "uniswapPool": "0x76Bf0abD20f1e0155Ce40A62615a90A709a6C3D8",
+        "granularity": "1",
+        "manager": "0x79d00fe5A00b8b9e1587Ba6432921f05DECCB4fd",
+        "tslThreshold": "0",
+        "stablecoinAddress": "0x4200000000000000000000000000000000000006",
+        "profit": "0",
+        "profitInUsd": "5.32",
+
+        "weightedEntryPrice": "0",
+        "exitPrice": "0",
+        "percentProfit": "0",
+        "contractState": "Uninitialized",
+        "stablecoinBalance": "0",
+        "stablecoinBalanceInUsd": "0",
+        "stableAsset": {
+            "name": "Wrapped Eth",
+            "symbol": "WETH",
+            "decimals": 18,
+            "logoURI": "https://github.com/ethereum-optimism/ethereum-optimism.github.io/blob/master/data/WETH/logo.png",
+            "pool": "",
+            "poolFee": "",
+            "pooledAgainst": "USDC",
+            "coinGeckoId": "BRETT"
+
+
+        },
+        "priceData" : [[0,0]]
+
+    },
+    {
+        "asset": {
+            "name": "Doginme",
+            "symbol": "doginme",
+            "decimals": 18,
+            "logoURI": "https://coin-images.coingecko.com/coins/images/35123/large/doginme-logo1-transparent200.png?1710856784&quot",
+            "pool": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
+            "poolFee": "10000",
+            "pooledAgainst": "USDC",
+            "coinGeckoId": "BRETT"
+
+        },
+        "contractAddress": "0xeD75424cbc9EDFFB2d49aC88d867B967a8f0b18A",
+        "erc20Balance": "250000000000000000000",
+        "balanceInUsd": "7.89",
+        "erc20Asset": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b",
+        "twapPrice": "42662244288",
+        "trailAmount": "1",
+        "uniswapPool": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
+        "granularity": "1",
+        "manager": "0x79d00fe5A00b8b9e1587Ba6432921f05DECCB4fd",
+        "tslThreshold": "46682015332",
+        "stablecoinAddress": "0x4200000000000000000000000000000000000006",
+        "profit": "0",
+        "profitInUsd": "5.32",
+
+        "weightedEntryPrice": "0",
+        "exitPrice": "0",
+        "percentProfit": "-5.766743958896167",
+        "contractState": "Active",
+        "stablecoinBalance": "0",
+        "stablecoinBalanceInUsd": "0",
+        "stableAsset": {
+            "name": "Wrapped Eth",
+            "symbol": "WETH",
+            "decimals": 18,
+            "logoURI": "https://github.com/ethereum-optimism/ethereum-optimism.github.io/blob/master/data/WETH/logo.png",
+            "pool": "",
+            "poolFee": "",
+            "pooledAgainst": "USDC",
+            "coinGeckoId": "BRETT"
+
+
+        },
+        "priceData" : [[0,0]]
+    }
+]

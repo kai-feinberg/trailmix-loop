@@ -1,0 +1,227 @@
+{
+    "10" : { 
+        "0x68f180fcce6836688e9084f035309e29bf0a2095": {
+            "name": "Wrapped Bitcoin",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "logoURI": "https://assets.coingecko.com/coins/images/1/standard/bitcoin.png?1696501400",
+            "pool":"0xaDAb76dD2dcA7aE080A796F0ce86170e482AfB4a",
+            "poolFee": "3000",
+            "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+            "coinGeckoId": "bitcoin"
+
+        },
+        "0x4200000000000000000000000000000000000042": {
+            "name": "Optimism",
+            "symbol": "OP",
+            "decimals": 18,
+            "logoURI": "https://ethereum-optimism.github.io/data/OP/logo.png",
+            "pool":"0xB533c12fB4e7b53b5524EAb9b47d93fF6C7A456F",
+            "poolFee": "3000",
+            "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+            "coinGeckoId": "optimism"
+          },
+        "0x4200000000000000000000000000000000000006": {
+            "name": "Wrapped Eth",
+            "symbol": "WETH",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628",
+            "pool":"0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b",
+            "poolFee": "500",
+            "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+            "coinGeckoId": "ethereum"
+            },
+            
+        "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6": {
+            "name": "Chainlink",
+            "symbol": "LINK",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/877/standard/chainlink-new-logo.png?1696502009",
+            "pool":"0x19EA026886cbB7A900EcB2458636d72b5CaE223B",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "chainlink"
+
+        },
+        
+        "0x6fd9d7ad17242c41f7131d257212c54a0e816691":{
+            "name": "Uniswap",
+            "symbol": "UNI",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/12504/standard/uniswap-logo.png?1720676669",
+            "pool":"0xAD4c666fC170B468B19988959eb931a3676f0e9F",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "uniswap"
+        },
+        
+        "0x8700daec35af8ff88c16bdf0418774cb3d7599b4": {
+            "name": "Synthetix",
+            "symbol": "SNX",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/3406/standard/SNX.png?1696504103",
+            "pool":"0x0392b358CE4547601BEFa962680BedE836606ae2",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "havven"
+
+        },
+     
+        "0x217d47011b23bb961eb6d93ca9945b7501a5bb11":{
+            "name": "Thales",
+            "symbol": "THALES",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/18388/standard/CLVZJN_C_400x400.png?1696517879",
+            "pool":"0xff7fbDf7832Ae524dEdA39cA402E03D92aDFF7A5",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "thales"
+        },
+        
+        "0x9b88d293b7a791e40d36a39765ffd5a1b9b5c349":{
+            "name": "Celo",
+            "symbol": "CELO",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/11090/standard/InjXBNx9_400x400.jpg?1696511031",
+            "pool":"0x6B3a3d6eD64FAF933a7a4B1Bd44b2efbA47614AC",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "celo"
+
+        },
+
+        "0x920cf626a271321c151d027030d5d08af699456b": {
+            "name": "Kwenta",
+            "symbol": "KWENTA",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/27409/standard/kwenta.png?1696526450",
+            "pool":"0xe9e3893921dE87b1194a8108F9d70C24BdE71c27",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "kwenta"
+        },
+
+        "0x0b2c639c533813f4aa9d7837caf62653d097ff85": {
+            "name": "USDC",
+            "symbol": "USDC",
+            "decimals": 6,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/standard/usdc.png?1696506694",
+            "pool":"",
+            "poolFee": "",
+            "pooledAgainst": "",
+            "coinGeckoId": ""
+        },
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095": {
+            "name": "",
+            "symbol": "",
+            "decimals": 8,
+            "logoURI": "",
+            "pool":"0xaDAb76dD2dcA7aE080A796F0ce86170e482AfB4a",
+            "poolFee": "3000",
+            "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+            "coinGeckoId": ""
+
+        }
+
+    } ,
+    "8453": {
+        "0x4ed4e862860bed51a9570b96d89af5e1b0efefed" : {
+            "name": "Degen",
+            "symbol": "DEGEN",
+            "decimals": 18,
+            "logoURI": "https://www.basetokenstore.com/_next/image?url=https%3A%2F%2Fcoin-images.coingecko.com%2Fcoins%2Fimages%2F34515%2Flarge%2Fandroid-chrome-512x512.png%3F1706198225&w=128&q=75",
+            "pool" : "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "degen-base"
+
+        },
+
+        "0x4200000000000000000000000000000000000006" : {
+            "name": "Wrapped Eth",
+            "symbol": "WETH",
+            "decimals": 18,
+            "logoURI": "https://github.com/ethereum-optimism/ethereum-optimism.github.io/blob/master/data/WETH/logo.png",
+            "pool" : "",
+            "poolFee": "",
+            "pooledAgainst": "",
+            "coinGeckoId": "ethereum"
+
+        },
+
+        "0x532f27101965dd16442e59d40670faf5ebb142e4" : {
+            "name" : "Brett",
+            "symbol": "BRETT",
+            "decimals": 18,
+            "logoURI": "https://www.basetokenstore.com/_next/image?url=https%3A%2F%2Fcoin-images.coingecko.com%2Fcoins%2Fimages%2F35529%2Flarge%2F1000050750.png%3F1709031995&w=128&q=75",
+            "pool" : "0x76Bf0abD20f1e0155Ce40A62615a90A709a6C3D8",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "based-brett"
+
+
+        },
+
+        "0xbc45647ea894030a4e9801ec03479739fa2485f0" : {
+            "name" : "Basenji",
+            "symbol": "BENJI",
+            "decimals": 18,
+            "logoURI": "https://www.basetokenstore.com/_next/image?url=https%3A%2F%2Fcoin-images.coingecko.com%2Fcoins%2Fimages%2F36416%2Flarge%2Fben200x200.jpg%3F1711420807&w=128&q=75",
+            "pool" : "0x16905890A1D02b6F824387419319Bf4188B961b0",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "basenji"
+
+
+        },
+        "0x6921b130d297cc43754afba22e5eac0fbf8db75b" : {
+            "name" : "Doginme",
+            "symbol": "DOGINME",
+            "decimals": 18,
+            "logoURI": "https://coin-images.coingecko.com/coins/images/35123/large/doginme-logo1-transparent200.png?1710856784&quot",
+            "pool" : "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
+            "poolFee": "10000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "doginme"
+
+
+        },
+        "0x3992b27da26848c2b19cea6fd25ad5568b68ab98" : {
+            "name": "Mantra",
+            "symbol": "OM",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/12151/standard/OM_Token.png?1696511991",
+            "pool": "0x61E26cbc72A3623f75aA2828b39ab60cDb952c93",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "mantra-dao"
+
+
+        },
+        "0xfa980ced6895ac314e7de34ef1bfae90a5add21b": {
+            "name": "Prime",
+            "symbol" : "PRIME",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/29053/standard/prime-logo-small-border_%282%29.png?1696528020",
+            "pool": "0x0C8Fed5DD65542cA5f0ADD1AcAb14C2e470c9110",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "echelon-prime"
+
+
+        },
+        "0x24fcfc492c1393274b6bcd568ac9e225bec93584": {
+            "name": "Mavia",
+            "symbol": "MAVIA",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/33895/standard/2023-12-20_21.21.41_%281%29.jpg?1703230771",
+            "pool": "0x3F66eB6fB8A60bC51D531a0E3Adb7e1F620FA449",
+            "poolFee": "3000",
+            "pooledAgainst": "0x4200000000000000000000000000000000000006",
+            "coinGeckoId": "heroes-of-mavia"
+
+        }
+
+    }
+}
+

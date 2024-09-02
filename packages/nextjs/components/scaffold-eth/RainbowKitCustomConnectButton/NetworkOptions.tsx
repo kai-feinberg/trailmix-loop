@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import { getNetworkColor } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
@@ -11,8 +11,8 @@ type NetworkOptionsProps = {
 };
 
 export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
-  const { switchChain } = useSwitchChain();
-  const { chain } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
+  const { chain } = useNetwork();
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
 
@@ -21,12 +21,12 @@ export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
       {allowedNetworks
         .filter(allowedNetwork => allowedNetwork.id !== chain?.id)
         .map(allowedNetwork => (
-          <li key={allowedNetwork.id} className={hidden ? "hidden" : ""}>
+          <div key={allowedNetwork.id} className={hidden ? "hidden" : ""}>
             <button
               className="menu-item btn-sm !rounded-xl flex gap-3 py-3 whitespace-nowrap"
               type="button"
               onClick={() => {
-                switchChain?.({ chainId: allowedNetwork.id });
+                switchNetwork?.(allowedNetwork.id);
               }}
             >
               <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" />
@@ -41,7 +41,7 @@ export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
                 </span>
               </span>
             </button>
-          </li>
+          </div>
         ))}
     </>
   );
