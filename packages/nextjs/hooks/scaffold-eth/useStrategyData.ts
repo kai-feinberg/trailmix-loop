@@ -8,12 +8,12 @@ import tokenList from '~~/lib/tokenList.json';
 import { useNativeCurrencyPrice } from "./useNativeCurrencyPrice";
 
 const useStrategyData = (contractAddress: string, onDataFetched: any) => {
-
   const { data: erc20TokenAddress, isLoading: isLoadingErc20TokenAddress } = useContractRead({
     address: contractAddress,
     abi: strategyABI.abi,
     functionName: 'getERC20TokenAddress',
   });
+
   const { data: twapPrice, isLoading: isLoadingTwapPrice } = useContractRead({
     address: contractAddress,
     abi: strategyABI.abi,
@@ -66,23 +66,12 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
     functionName: 'getState',
   });
 
-  const {data: profit, isLoading: isLoadingProfit} = useContractRead({
+  const {data: depositValue, isLoading: isLoadingDepositValue} = useContractRead({
     address: contractAddress,
     abi: strategyABI.abi,
-    functionName: "getProfit"
+    functionName: "getDepositValue"
   })
 
-  const {data: weightedEntryPrice, isLoading: isLoadingWeightedEntryPrice} = useContractRead({
-    address: contractAddress,
-    abi: strategyABI.abi,
-    functionName: "getWeightedEntryPrice"
-  })
-
-  const {data: exitPrice, isLoading: isLoadingExitPrice} = useContractRead({
-    address: contractAddress,
-    abi: strategyABI.abi,
-    functionName: "getExitPrice"
-  })
 
   const { targetNetwork } = useTargetNetwork();
   const ethPrice = useNativeCurrencyPrice();
@@ -124,12 +113,13 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
   useEffect(() => {
     // console.log("trying for ", erc20TokenAddress)
     
-    if (!isLoadingWeightedEntryPrice && ethPrice && !isLoadingExitPrice && !isLoadingProfit && !isLoadingContractState && !isLoadingStablecoinBalance&&
+    if (!isLoadingContractState && !isLoadingStablecoinBalance&&
         !isLoadingErc20TokenAddress && !isLoadingTwapPrice && !isLoadingErc20Balance && !isLoadingStablecoinAddress && !isLoadingTrailAmount
         && !isLoadingUniswapPool && !isLoadingGranularity && !isLoadingManager && !isLoadingTslThreshold &&!isLoadingDeployEvent
         &&deployEvent && !isLoadingThresholdUpdates && thresholdUpdates && !isLoadingFundsDeposited 
       ) {
       try {
+        console.log(deployEvent)
         
         // const percentProfit = Number(totalCost) === 0 ? 0 : (Number(computedProfit) / Number(totalCost)) * 100;
         const percentProfit = 0;
@@ -141,8 +131,7 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
         const assetDecimals = 10**tokenData.decimals;
         const price = (stablecoinAddress as string).toLowerCase() === "0x0b2c639c533813f4aa9d7837caf62653d097ff85" ? (10**12) : ethPrice;
         
-        const usdValue = (Number(erc20Balance) * (price) * Number(twapPrice)) / ((assetDecimals ** 2)* ((10**(18-tokenData.decimals))**2 ));
-        const profitInUsd = Number(profit)*price / (assetDecimals * 10**(18-tokenData.decimals)**2)
+        const usdValue = (Number(erc20Balance) * Number(twapPrice));
 
         const stableBalUsd = (Number(stablecoinBalance) * price)/ (assetDecimals* 10 ** (18 - tokenData.decimals))
 
@@ -161,7 +150,6 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
 
         const adjustedThreshold= (Number(tslThreshold) * price / (10 ** 18 * 10 ** (18 - tokenData.decimals)));
 
-        const entPrice = (Number(weightedEntryPrice)*price/ (10 ** 18 * 10 ** (18 - tokenData.decimals)));
         
         const examplePriceData = [[
           1711930196348,
@@ -473,11 +461,8 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
             manager: manager?.toString() ?? '',
             tslThreshold: adjustedThreshold?.toString() ?? '',
             stablecoinAddress: stablecoinAddress?.toString() ?? '',
-            profit: profit?.toString() ?? '',
-            weightedEntryPrice: entPrice?.toString() ?? '',
-            exitPrice: exitPrice?.toString() ?? '',
-            percentProfit: percentProfit.toString(),
-            profitInUsd: profitInUsd.toString() ?? '',
+            depositValue: depositValue?.toString() ?? '',
+      
             contractState: contractState?.toString() ?? '',
             stablecoinBalance: stablecoinBalance?.toString() ?? '',
             stablecoinBalanceInUsd: stableBalUsd?.toString() ?? '',
@@ -498,7 +483,7 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
             console.info("ligma", e);
         }
     }
-  }, [erc20TokenAddress, profit, exitPrice, weightedEntryPrice, contractState,
+  }, [erc20TokenAddress,contractState,
      erc20Balance, stablecoinAddress, stablecoinBalance, trailAmount, uniswapPool, granularity, manager, 
      tslThreshold, deployEvent, thresholdUpdates, fundsDeposited]);
 

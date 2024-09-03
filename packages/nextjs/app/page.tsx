@@ -20,7 +20,7 @@ import OnboardingModal from "~~/components/OnboardingModal";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth/useNativeCurrencyPrice"; // Changed to named import
 import Page2 from "~~/public/page2";
 
-import {Strategy} from "~~/types/customTypes";
+import { Strategy } from "~~/types/customTypes";
 
 
 
@@ -41,7 +41,7 @@ export default function Home() {
   }, [fetchedEns]);
 
   const { strategies, setStrategies } = useGlobalState();
-  const activeStrategies = strategies.filter((strategy: Strategy) => strategy.contractState === "Active");
+  const activeStrategies = strategies.filter((strategy: Strategy) => strategy.contractState === "TrailingStop" || strategy.contractState === "LimitBuy");
 
   const numberStrats = activeStrategies.length;
   let usdBalance = 0;
@@ -49,17 +49,7 @@ export default function Home() {
 
   activeStrategies.forEach((strategy: Strategy) => {
     usdBalance += Number(strategy.balanceInUsd);
-    profit += Number(strategy.profitInUsd);
   });
-
-  const claimableStrategies = strategies.filter((strategy: Strategy) => strategy.contractState === "Claimable");
-  let claimBalance = 0
-  const numClaims = claimableStrategies.length;
-  claimableStrategies.forEach((strategy: Strategy) => {
-    claimBalance += Number(strategy.stablecoinBalanceInUsd);
-    profit += Number(strategy.profitInUsd)
-  })
-
 
 
   const cardData: CardProps[] = [
@@ -76,9 +66,9 @@ export default function Home() {
       icon: Users
     },
     {
-      label: "Pending claims",
-      amount: `$${claimBalance.toFixed(2)}`,
-      description: `${numClaims} closed strategies`,
+      label: "Placeholder",
+      amount: `0`,
+      description: `asdsfa`,
       icon: CreditCard
     },
     {

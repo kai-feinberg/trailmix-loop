@@ -23,15 +23,11 @@ export type Strategy = {
     uniswapPool: string;
     granularity: string;
     manager: string;
+    depositValue: string;
     tslThreshold: string;
     stablecoinAddress: string;
     stablecoinBalance: string;
     stablecoinBalanceInUsd: string;
-    profit: string; 
-    profitInUsd: string; //profit in usd 
-    weightedEntryPrice: string;
-    exitPrice: string,
-    percentProfit: string;
     contractState: string;
     stableAsset: TokenData;
     updateData: [number, number][];
