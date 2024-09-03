@@ -34,17 +34,7 @@ export default function SideNavbar({ }: Props) {
       </div>
 
       <div className="pt-18">
-        {/* {!mobileWidth && (
-          <div className="absolute right-[-20px] top-7">
-            <Button
-              onClick={toggleSidebar}
-              variant="secondary"
-              className=" rounded-full p-2"
-            >
-              <ChevronRight />
-            </Button>
-          </div>
-        )} */}
+       
         <Nav
           isCollapsed={ isCollapsed}
           links={[
@@ -61,18 +51,18 @@ export default function SideNavbar({ }: Props) {
               icon: ClipboardPenLine,
               variant: "ghost",
             },
-            {
-              title: "History",
-              href: "/history",
-              icon: History,
-              variant: "ghost",
-            },
-            {
-              title: "Backtesting",
-              href: "/backtesting",
-              icon: History,
-              variant: "ghost",
-            }
+            // {
+            //   title: "History",
+            //   href: "/history",
+            //   icon: History,
+            //   variant: "ghost",
+            // },
+            // {
+            //   title: "Backtesting",
+            //   href: "/backtesting",
+            //   icon: History,
+            //   variant: "ghost",
+            // }
           ]}
         />
         <RainbowKitCustomConnectButton />

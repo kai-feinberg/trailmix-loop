@@ -8,7 +8,8 @@
             "pool":"0xaDAb76dD2dcA7aE080A796F0ce86170e482AfB4a",
             "poolFee": "3000",
             "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
-            "coinGeckoId": "bitcoin"
+            "coinGeckoId": "bitcoin",
+            "ethPair": false
 
         },
         "0x4200000000000000000000000000000000000042": {
@@ -19,7 +20,9 @@
             "pool":"0xB533c12fB4e7b53b5524EAb9b47d93fF6C7A456F",
             "poolFee": "3000",
             "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
-            "coinGeckoId": "optimism"
+            "coinGeckoId": "optimism",
+            "ethPair": false
+
           },
         "0x4200000000000000000000000000000000000006": {
             "name": "Wrapped Eth",
@@ -29,7 +32,9 @@
             "pool":"0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b",
             "poolFee": "500",
             "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
-            "coinGeckoId": "ethereum"
+            "coinGeckoId": "ethereum",
+            "ethPair": false
+
             },
             
         "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6": {
@@ -40,7 +45,8 @@
             "pool":"0x19EA026886cbB7A900EcB2458636d72b5CaE223B",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "chainlink"
+            "coinGeckoId": "chainlink",
+            "ethPair": true
 
         },
         
@@ -52,7 +58,9 @@
             "pool":"0xAD4c666fC170B468B19988959eb931a3676f0e9F",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "uniswap"
+            "coinGeckoId": "uniswap",
+            "ethPair": true
+
         },
         
         "0x8700daec35af8ff88c16bdf0418774cb3d7599b4": {
@@ -63,7 +71,8 @@
             "pool":"0x0392b358CE4547601BEFa962680BedE836606ae2",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "havven"
+            "coinGeckoId": "havven",
+            "ethPair": true
 
         },
      
@@ -75,7 +84,9 @@
             "pool":"0xff7fbDf7832Ae524dEdA39cA402E03D92aDFF7A5",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "thales"
+            "coinGeckoId": "thales",
+            "ethPair": true
+
         },
         
         "0x9b88d293b7a791e40d36a39765ffd5a1b9b5c349":{
@@ -86,7 +97,9 @@
             "pool":"0x6B3a3d6eD64FAF933a7a4B1Bd44b2efbA47614AC",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "celo"
+            "coinGeckoId": "celo",
+            "ethPair": true
+
 
         },
 
@@ -98,7 +111,8 @@
             "pool":"0xe9e3893921dE87b1194a8108F9d70C24BdE71c27",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "kwenta"
+            "coinGeckoId": "kwenta",
+            "ethPair": true
         },
 
         "0x0b2c639c533813f4aa9d7837caf62653d097ff85": {
@@ -109,7 +123,9 @@
             "pool":"",
             "poolFee": "",
             "pooledAgainst": "",
-            "coinGeckoId": ""
+            "coinGeckoId": "",
+            "ethPair": false
+
         },
         "0x68f180fcCe6836688e9084f035309E29Bf0A2095": {
             "name": "",
@@ -119,7 +135,9 @@
             "pool":"0xaDAb76dD2dcA7aE080A796F0ce86170e482AfB4a",
             "poolFee": "3000",
             "pooledAgainst": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
-            "coinGeckoId": ""
+            "coinGeckoId": "",
+            "ethPair": false
+
 
         }
 
@@ -133,7 +151,9 @@
             "pool" : "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "degen-base"
+            "coinGeckoId": "degen-base",
+            "ethPair": false
+
 
         },
 
@@ -145,7 +165,9 @@
             "pool" : "",
             "poolFee": "",
             "pooledAgainst": "",
-            "coinGeckoId": "ethereum"
+            "coinGeckoId": "ethereum",
+            "ethPair": false
+
 
         },
 
@@ -157,7 +179,9 @@
             "pool" : "0x76Bf0abD20f1e0155Ce40A62615a90A709a6C3D8",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "based-brett"
+            "coinGeckoId": "based-brett",
+            "ethPair": true
+
 
 
         },
@@ -170,7 +194,9 @@
             "pool" : "0x16905890A1D02b6F824387419319Bf4188B961b0",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "basenji"
+            "coinGeckoId": "basenji",
+            "ethPair": true
+
 
 
         },
@@ -182,7 +208,10 @@
             "pool" : "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
             "poolFee": "10000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "doginme"
+            "coinGeckoId": "doginme",
+            "ethPair": true
+
+
 
 
         },
@@ -194,7 +223,9 @@
             "pool": "0x61E26cbc72A3623f75aA2828b39ab60cDb952c93",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "mantra-dao"
+            "coinGeckoId": "mantra-dao",
+            "ethPair": true
+
 
 
         },
@@ -206,7 +237,9 @@
             "pool": "0x0C8Fed5DD65542cA5f0ADD1AcAb14C2e470c9110",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "echelon-prime"
+            "coinGeckoId": "echelon-prime",
+            "ethPair": true
+
 
 
         },
@@ -218,7 +251,9 @@
             "pool": "0x3F66eB6fB8A60bC51D531a0E3Adb7e1F620FA449",
             "poolFee": "3000",
             "pooledAgainst": "0x4200000000000000000000000000000000000006",
-            "coinGeckoId": "heroes-of-mavia"
+            "coinGeckoId": "heroes-of-mavia",
+            "ethPair": true
+
 
         }
 

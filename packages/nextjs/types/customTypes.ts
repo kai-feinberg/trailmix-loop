@@ -7,6 +7,7 @@ export interface TokenData {
     poolFee: string;
     pooledAgainst: string;
     coinGeckoId: string;
+    ethPair: boolean;
   }
   
   
