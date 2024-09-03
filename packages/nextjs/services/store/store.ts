@@ -1,6 +1,7 @@
 import create from "zustand";
 import scaffoldConfig from "~~/scaffold.config";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
+import { Strategy } from "~~/types/customTypes";
 
 /**
  * Zustand Store
@@ -12,25 +13,23 @@ import { ChainWithAttributes } from "~~/utils/scaffold-eth";
  */
 
 type GlobalState = {
-  nativeCurrency: {
-    price: number;
-    isFetching: boolean;
-  };
+  nativeCurrencyPrice: number;
   setNativeCurrencyPrice: (newNativeCurrencyPriceState: number) => void;
-  setIsNativeCurrencyFetching: (newIsNativeCurrencyFetching: boolean) => void;
   targetNetwork: ChainWithAttributes;
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
+  strategies: Strategy[];
+  setStrategies: (newStrategies: Strategy[] | ((prevStrategies: Strategy[]) => Strategy[])) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
-  nativeCurrency: {
-    price: 0,
-    isFetching: true,
-  },
-  setNativeCurrencyPrice: (newValue: number): void =>
-    set(state => ({ nativeCurrency: { ...state.nativeCurrency, price: newValue } })),
-  setIsNativeCurrencyFetching: (newValue: boolean): void =>
-    set(state => ({ nativeCurrency: { ...state.nativeCurrency, isFetching: newValue } })),
+  nativeCurrencyPrice: 0,
+  setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
   targetNetwork: scaffoldConfig.targetNetworks[0],
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
+  strategies: [],
+  setStrategies: (newStrategies) => set((state) => ({ 
+    strategies: typeof newStrategies === 'function' 
+      ? newStrategies(state.strategies) 
+      : newStrategies 
+  })),
 }));

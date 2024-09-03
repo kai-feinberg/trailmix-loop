@@ -69,7 +69,7 @@ const OnboardingModal = () => {
                             Trailmix acts as a  safety net for your investments, rising with the asset and selling when prices fall to ensure you make profits.
                         </p>
                         <div className="flex justify-center mb-6 w-full">
-                            <Page2/>
+                            <Page2 />
                         </div>
                     </div>
 

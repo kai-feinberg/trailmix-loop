@@ -1,71 +1,132 @@
+/** @format */
 "use client";
 
-import Link from "next/link";
-import type { NextPage } from "next";
+import PageTitle from "@/components/PageTitle";
+import { DollarSign, Users, CreditCard, TrendingUp, ArrowUp, ArrowLeftRight, ArrowDown } from "lucide-react";
+import Card, { CardContent, CardProps } from "@/components/Card";
+import { CreateNew } from "@/components/CreateNew";
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import Events from "~~/components/Events";
+import { useEnsName } from "wagmi";
+import { useGlobalState } from "~~/services/store/store";
 
-const Home: NextPage = () => {
+import ercABI from "~~/contracts/erc20ABI.json";
+const erc20ABI = ercABI.abi;
+
+
+import stratABI from "~~/contracts/strategyABI.json";
+import OnboardingModal from "~~/components/OnboardingModal";
+import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth/useNativeCurrencyPrice"; // Changed to named import
+import Page2 from "~~/public/page2";
+
+import {Strategy} from "~~/types/customTypes";
+
+
+
+export default function Home() {
+
   const { address: connectedAddress } = useAccount();
+  const [ens, setEns] = useState<string | null>();
+  const ethPrice = useNativeCurrencyPrice();
 
+
+  const { data: fetchedEns } = useEnsName({
+    address: connectedAddress,
+    chainId: 1,
+  });
+
+  useEffect(() => {
+    setEns(fetchedEns);
+  }, [fetchedEns]);
+
+  const { strategies, setStrategies } = useGlobalState();
+  const activeStrategies = strategies.filter((strategy: Strategy) => strategy.contractState === "Active");
+
+  const numberStrats = activeStrategies.length;
+  let usdBalance = 0;
+  let profit = 0;
+
+  activeStrategies.forEach((strategy: Strategy) => {
+    usdBalance += Number(strategy.balanceInUsd);
+    profit += Number(strategy.profitInUsd);
+  });
+
+  const claimableStrategies = strategies.filter((strategy: Strategy) => strategy.contractState === "Claimable");
+  let claimBalance = 0
+  const numClaims = claimableStrategies.length;
+  claimableStrategies.forEach((strategy: Strategy) => {
+    claimBalance += Number(strategy.stablecoinBalanceInUsd);
+    profit += Number(strategy.profitInUsd)
+  })
+
+
+
+  const cardData: CardProps[] = [
+    {
+      label: "Current Balance",
+      amount: `$${usdBalance.toFixed(2)}`,
+      description: `Up $${profit.toFixed(2)} from initial invesment`,
+      icon: DollarSign
+    },
+    {
+      label: "Active Vaults",
+      amount: String(numberStrats),
+      description: "across 5 assets",
+      icon: Users
+    },
+    {
+      label: "Pending claims",
+      amount: `$${claimBalance.toFixed(2)}`,
+      description: `${numClaims} closed strategies`,
+      icon: CreditCard
+    },
+    {
+      label: "Current profit",
+      amount: `$${profit.toFixed(2)}`,
+      description: "+20% since last month",
+      icon: TrendingUp
+    }
+  ];
+
+  const pageTitle = ens ? `Welcome ${ens}` : connectedAddress ? `Welcome ${connectedAddress?.slice(0, 6)}...${connectedAddress?.slice(-4)}` : "Welcome example_user";
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col sm:flex-row">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
-
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="flex flex-col gap-5 w-full">
+      <div className="flex flex-row justify-between">
+        <PageTitle title={pageTitle} />
+        <OnboardingModal />
       </div>
-    </>
-  );
-};
+      <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
+        {cardData.map((d, i) => (
+          <Card
+            key={i}
+            amount={d.amount}
+            description={d.description}
+            icon={d.icon}
+            label={d.label}
+          />
+        ))}
+      </section>
+      <section className="grid grid-cols-1  gap-4 transition-all lg:grid-cols-2">
+        <CardContent>
+          <div className="flex justify-between items-center">
+            <p className="p-4 text-2xl">Overview</p>
+            <CreateNew />
+          </div>
 
-export default Home;
+          <Page2 />
+        </CardContent>
+        <CardContent className="flex justify-between gap-4">
+          <section>
+            <p>Transaction history</p>
+            <p className="text-sm text-gray-400">
+              Your 5 most recent transactions.
+            </p>
+          </section>
+          <Events />
+        </CardContent>
+
+      </section>
+    </div>
+  );
+}

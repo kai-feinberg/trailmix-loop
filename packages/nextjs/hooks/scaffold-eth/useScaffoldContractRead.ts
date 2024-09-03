@@ -1,9 +1,6 @@
-import { useEffect } from "react";
 import { useTargetNetwork } from "./useTargetNetwork";
-import { QueryObserverResult, RefetchOptions, useQueryClient } from "@tanstack/react-query";
 import type { ExtractAbiFunctionNames } from "abitype";
-import { ReadContractErrorType } from "viem";
-import { useBlockNumber, useReadContract } from "wagmi";
+import { useContractRead } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import {
   AbiFunctionReturnType,
@@ -20,7 +17,7 @@ import {
  * @param config.functionName - name of the function to be called
  * @param config.args - args to be passed to the function call
  */
-export const useScaffoldReadContract = <
+export const useScaffoldContractRead = <
   TContractName extends ContractName,
   TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, "pure" | "view">,
 >({
@@ -31,43 +28,21 @@ export const useScaffoldReadContract = <
 }: UseScaffoldReadConfig<TContractName, TFunctionName>) => {
   const { data: deployedContract } = useDeployedContractInfo(contractName);
   const { targetNetwork } = useTargetNetwork();
-  const { query: queryOptions, watch, ...readContractConfig } = readConfig;
-  // set watch to true by default
-  const defaultWatch = watch ?? true;
 
-  const readContractHookRes = useReadContract({
+  return useContractRead({
     chainId: targetNetwork.id,
     functionName,
     address: deployedContract?.address,
     abi: deployedContract?.abi,
+    watch: true,
     args,
-    ...(readContractConfig as any),
-    query: {
-      enabled: !Array.isArray(args) || !args.some(arg => arg === undefined),
-      ...queryOptions,
-    },
-  }) as Omit<ReturnType<typeof useReadContract>, "data" | "refetch"> & {
+    enabled: !Array.isArray(args) || !args.some(arg => arg === undefined),
+    ...(readConfig as any),
+  }) as Omit<ReturnType<typeof useContractRead>, "data" | "refetch"> & {
     data: AbiFunctionReturnType<ContractAbi, TFunctionName> | undefined;
-    refetch: (
-      options?: RefetchOptions | undefined,
-    ) => Promise<QueryObserverResult<AbiFunctionReturnType<ContractAbi, TFunctionName>, ReadContractErrorType>>;
+    refetch: (options?: {
+      throwOnError: boolean;
+      cancelRefetch: boolean;
+    }) => Promise<AbiFunctionReturnType<ContractAbi, TFunctionName>>;
   };
-
-  const queryClient = useQueryClient();
-  const { data: blockNumber } = useBlockNumber({
-    watch: defaultWatch,
-    chainId: targetNetwork.id,
-    query: {
-      enabled: defaultWatch,
-    },
-  });
-
-  useEffect(() => {
-    if (defaultWatch) {
-      queryClient.invalidateQueries({ queryKey: readContractHookRes.queryKey });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockNumber]);
-
-  return readContractHookRes;
 };

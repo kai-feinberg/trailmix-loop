@@ -16,14 +16,11 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 
-import { useWindowWidth } from "@react-hook/window-size";
 import { NetworkOptions } from "./scaffold-eth/RainbowKitCustomConnectButton/NetworkOptions";
 
 export default function SideNavbar({ }: Props) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const onlyWidth = useWindowWidth();
-  const mobileWidth = onlyWidth < 768;
 
   function toggleSidebar() {
     setIsCollapsed(!isCollapsed);
@@ -49,7 +46,7 @@ export default function SideNavbar({ }: Props) {
           </div>
         )} */}
         <Nav
-          isCollapsed={mobileWidth ? true : isCollapsed}
+          isCollapsed={ isCollapsed}
           links={[
             {
               title: "Dashboard",

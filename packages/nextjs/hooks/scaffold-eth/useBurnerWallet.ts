@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { useLocalStorage } from "usehooks-ts";
 import { Chain, Hex, HttpTransport, PrivateKeyAccount, createWalletClient, http } from "viem";
-import { WalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { usePublicClient } from "wagmi";
+import { WalletClient, usePublicClient } from "wagmi";
 
 const burnerStorageKey = "scaffoldEth2.burnerWallet.sk";
 
@@ -63,8 +61,7 @@ export const useBurnerWallet = (): BurnerAccount => {
     initializeWithValue: false,
   });
 
-  const { targetNetwork } = useTargetNetwork();
-  const publicClient = usePublicClient({ chainId: targetNetwork.id });
+  const publicClient = usePublicClient();
   const [walletClient, setWalletClient] = useState<WalletClient<HttpTransport, Chain, PrivateKeyAccount>>();
   const [generatedPrivateKey, setGeneratedPrivateKey] = useState<Hex>("0x");
   const [account, setAccount] = useState<PrivateKeyAccount>();
@@ -102,14 +99,14 @@ export const useBurnerWallet = (): BurnerAccount => {
       console.log("⚠ Could not create burner wallet");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicClient?.chain.id]);
+  }, [publicClient.chain.id]);
 
   /**
    * Load wallet with burnerSk
    * connect and set wallet, once we have burnerSk and valid provider
    */
   useEffect(() => {
-    if (burnerSk && publicClient?.chain.id) {
+    if (burnerSk && publicClient.chain.id) {
       let wallet: WalletClient<HttpTransport, Chain, PrivateKeyAccount> | undefined = undefined;
       if (isValidSk(burnerSk)) {
         const randomAccount = privateKeyToAccount(burnerSk);
@@ -135,7 +132,7 @@ export const useBurnerWallet = (): BurnerAccount => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [burnerSk, publicClient?.chain.id]);
+  }, [burnerSk, publicClient.chain.id]);
 
   return {
     walletClient,
