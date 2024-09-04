@@ -121,9 +121,6 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
       try {
         console.log(deployEvent)
         
-        // const percentProfit = Number(totalCost) === 0 ? 0 : (Number(computedProfit) / Number(totalCost)) * 100;
-        const percentProfit = 0;
-        // // Callback to update parent component state
 
         const tokenData = (tokenList as TokenList)[targetNetwork.id][erc20TokenAddress?.toString().toLowerCase() ?? ''];
         const stableAssetData = (tokenList as TokenList)[targetNetwork.id][stablecoinAddress?.toString().toLowerCase() ?? '']
@@ -131,9 +128,8 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
         const assetDecimals = 10**tokenData.decimals;
         const price = (stablecoinAddress as string).toLowerCase() === "0x0b2c639c533813f4aa9d7837caf62653d097ff85" ? (10**12) : ethPrice;
         
-        const usdValue = (Number(erc20Balance) * Number(twapPrice));
+     
 
-        const stableBalUsd = (Number(stablecoinBalance) * price)/ (assetDecimals* 10 ** (18 - tokenData.decimals))
 
         let thresholdUpdateData: [number, number][] = [];
         if (thresholdUpdates.length >0){
@@ -444,7 +440,17 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
           66103.92369277785
         ]]
 
-        const currPrice = (Number(twapPrice)*price/ (10 ** 18 * 10 ** (18 - tokenData.decimals)));
+        const currPrice = (Number(twapPrice)/10**18);
+
+        const depVal= Number(depositValue)/10**36;
+
+        const stableBalUsd = (Number(stablecoinBalance) * price)/ (assetDecimals* 10 ** (18 - tokenData.decimals))
+        const ercBalUsd = (Number(erc20Balance)*currPrice/ (10**18))
+        const usdValue = ercBalUsd + stableBalUsd;
+
+        console.log("deposit value", depVal);
+        console.log("current value", usdValue);
+        console.log("price", currPrice);
 
 
         const strategy: Strategy = {
@@ -461,7 +467,7 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
             manager: manager?.toString() ?? '',
             tslThreshold: adjustedThreshold?.toString() ?? '',
             stablecoinAddress: stablecoinAddress?.toString() ?? '',
-            depositValue: depositValue?.toString() ?? '',
+            depositValue: depVal?.toString() ?? '',
       
             contractState: contractState?.toString() ?? '',
             stablecoinBalance: stablecoinBalance?.toString() ?? '',

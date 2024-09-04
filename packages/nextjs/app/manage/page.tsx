@@ -183,7 +183,8 @@ export default function ManagePage({ }: Props) {
     const active = strategies.filter(
       (strategy) =>
         // strategy.contractState === "Uninitialized" ||
-        strategy.contractState === "Active"
+        strategy.contractState === "TrailingStop" ||
+        strategy.contractState === "LimitBuy"
     );
     const uninitialized = strategies.filter(
       (strategy) =>
