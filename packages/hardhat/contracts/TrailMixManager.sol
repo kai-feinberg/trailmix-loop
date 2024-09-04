@@ -150,6 +150,13 @@ contract TrailMixManager is ReentrancyGuard {
 			activeStrategies.push(address(_strategy));
 			isActiveStrategy[address(_strategy)] = true;
 			strategyIndex[address(_strategy)] = activeStrategies.length - 1;
+
+			emit ThresholdUpdated(
+				_strategy,
+				ITrailMix(_strategy).getTSLThreshold(),
+				ITrailMix(_strategy).getTSLThreshold(),
+				block.timestamp
+			);
 		}
 
 		// Emit an event for the deposit
@@ -232,9 +239,12 @@ contract TrailMixManager is ReentrancyGuard {
 		bool updateNeeded = false;
 		bytes memory updateData;
 		for (uint256 i = 0; i < activeStrategies.length; i++) {
-			(bool buy, bool sell, bool update, uint256 newThreshold) = ITrailMix(
-				activeStrategies[i]
-			).checkUpkeepNeeded();
+			(
+				bool buy,
+				bool sell,
+				bool update,
+				uint256 newThreshold
+			) = ITrailMix(activeStrategies[i]).checkUpkeepNeeded();
 
 			if (sell) {
 				// Prioritize swap action if needed
@@ -249,7 +259,7 @@ contract TrailMixManager is ReentrancyGuard {
 						newThreshold
 					)
 				);
-			} else if (buy){
+			} else if (buy) {
 				// Prioritize swap action if needed
 				return (
 					true,
@@ -262,7 +272,6 @@ contract TrailMixManager is ReentrancyGuard {
 						newThreshold
 					)
 				);
-
 			} else if (update) {
 				// If no swap needed, check for threshold update
 				// Note: This approach only encodes action for the first strategy needing an action.
@@ -327,8 +336,9 @@ contract TrailMixManager is ReentrancyGuard {
 				ITrailMix(strategy).getStablecoinAddress(),
 				block.timestamp
 			);
-		} else if (buy){
-			uint256 s_stablecoinBalance = ITrailMix(strategy).getStablecoinBalance();
+		} else if (buy) {
+			uint256 s_stablecoinBalance = ITrailMix(strategy)
+				.getStablecoinBalance();
 
 			ITrailMix(strategy).executeLimitBuy();
 
@@ -342,9 +352,7 @@ contract TrailMixManager is ReentrancyGuard {
 				ITrailMix(strategy).getERC20TokenAddress(),
 				block.timestamp
 			);
-		}
-		
-		else if (updateThreshold) {
+		} else if (updateThreshold) {
 			uint256 oldThreshold = ITrailMix(strategy).getTSLThreshold();
 
 			//call updateThreshold function to update the threshold

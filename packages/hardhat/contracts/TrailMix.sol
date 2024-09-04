@@ -224,6 +224,7 @@ contract TrailMix is ReentrancyGuard {
 
 			return (limitTrigger, false, false, 0);
 		}
+		return (false, false, false, 0);
 	}
 
 	/**
@@ -310,10 +311,7 @@ contract TrailMix is ReentrancyGuard {
 			minAmountOut = 0;
 		}
 
-		IERC20withDecimals(tokenIn).approve(
-			address(s_uniswapRouter),
-			amount
-		);
+		IERC20withDecimals(tokenIn).approve(address(s_uniswapRouter), amount);
 
 		ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
 			.ExactInputSingleParams({
@@ -334,7 +332,7 @@ contract TrailMix is ReentrancyGuard {
 			s_stablecoinBalance = 0;
 		} else {
 			s_stablecoinBalance += amountOut;
-			s_erc20Balance =0;
+			s_erc20Balance = 0;
 		}
 		return amountOut;
 	}
@@ -348,11 +346,7 @@ contract TrailMix is ReentrancyGuard {
 			state == ContractState.TrailingStop,
 			"Not in TrailingStop state"
 		);
-		uint256 amountOut = swapOnUniswap(
-			s_erc20Token,
-			s_stablecoin,
-			s_erc20Balance
-		);
+		swapOnUniswap(s_erc20Token, s_stablecoin, s_erc20Balance);
 
 		s_limitBuyPrice = getExactPrice(s_erc20Token); // price that the erc20 token was sold at
 
@@ -362,11 +356,7 @@ contract TrailMix is ReentrancyGuard {
 
 	function executeLimitBuy() external {
 		require(state == ContractState.LimitBuy, "Not in LimitBuy state");
-		uint256 amountOut = swapOnUniswap(
-			s_stablecoin,
-			s_erc20Token,
-			s_stablecoinBalance
-		);
+		swapOnUniswap(s_stablecoin, s_erc20Token, s_stablecoinBalance);
 
 		uint256 currentPrice = getTwapPrice();
 		s_tslThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
