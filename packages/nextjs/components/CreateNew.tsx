@@ -220,7 +220,7 @@ export function CreateNew() {
                       <div>Balanced</div>
                     </div>
                   </Button>
-                  <Button className={`w-full flex justify-center rounded-xl`} onClick={() => setStrategy("5")}>
+                  <Button className={`w-full flex justify-center rounded-xl`} onClick={() => setStrategy("1")}>
                     <div className={`flex flex-col items-center p-4 bg-white text-blue-600 ${strategy === "5" ? "border-4 border-black" : "border-2 border-transparent"} rounded-xl`}>
                       <SwordIcon className="h-6 w-6 mb-2" />
                       <div>Aggressive</div>

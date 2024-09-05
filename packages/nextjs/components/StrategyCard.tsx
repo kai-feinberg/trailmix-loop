@@ -65,9 +65,9 @@ export function StrategyCard({ strategy }: { strategy: Strategy }) {
             <Badge variant="outline" className="text-base" >
               Value Deposited: ${(Number(strategy.depositValue)).toFixed(3)}
             </Badge>
-            <Badge variant="outline" className="text-base" >
+            {/* <Badge variant="outline" className="text-base" >
               Duration: {Math.floor((Number(Date.now()) - Number(strategy.dateCreated) * 1000) / 86400000)} days
-            </Badge>
+            </Badge> */}
             <Badge variant="outline" className="text-base" >
               Status: {statusMessage}
             </Badge>
