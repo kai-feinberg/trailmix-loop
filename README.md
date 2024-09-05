@@ -17,7 +17,17 @@
 
 ## Trading Strategy
 
-Trailmix uses a trailing stop losses to know when to sell your assets. This can be thought of as a safety net that follows your asset as it rises and selling it when it begins to fall. TrailMix will then set a limit order to buy back in when the price reaches the same level. This ensures that you never lose more than a specified percentage of your funds, while still giving you exposure to the upside.
+Trailmix uses a trailing stop losses to know when to sell your assets. This can be thought of as a safety net that follows your asset as it rises and selling it when it begins to fall. TrailMix will then set a limit order to buy back in when the price reaches the same level. This ensures that you never lose more than a specified percentage of your funds, while still giving you exposure to the upside. It may seem counter intuitive not to buy back in when the price is low but the issues is that the price can always go lower! It is a much safer bet to simply re enter your same position when the markets are healthier.
+
+
+![TrailMix Explanation](./packages/nextjs/public/strategy_explanation.png)
+![TrailMix Screenshot](./packages/nextjs/public/combined.png)
+
+
+This ensures that you capture the general appreciation of an asset without having to hold through extended downturns. Your portfolio will always be near its all time high so you can withdraw without roundtripping your gains.
+
+![TrailMix Performance](./packages/nextjs/public/strategy_performance.png)
+
 
 Explore TrailMix backtesting [here](https://trailmix-backtest.vercel.app/)
 
@@ -40,7 +50,9 @@ cd my-dapp-example
 yarn install
 ```
 
-2. Change into the nextjs directory and start your NextJS app:
+2. Add COIN_GECKO_API_KEY to your .env file in the nextjs directory. Add your DEPLOYER_PRIVATE_KEY to the .env file in the hardhat directory
+
+3. Change into the nextjs directory and start your NextJS app:
 
 ```
 cd packages/nextjs
@@ -50,6 +62,7 @@ yarn start
 Visit your app on: `http://localhost:3000`. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
 
 Deploy smart contracts by running `npx hardhat deploy --network optimism`
+Verify your contract on optimistic etherscan by running `npx hardhat verify --network optimimsm CONTRACT_ADDRESS`
 
 - Edit your smart contracts `TrailMix.sol or TrailMixManager.sol` in `packages/hardhat/contracts`
 - Edit your deployment scripts in `packages/hardhat/deploy`

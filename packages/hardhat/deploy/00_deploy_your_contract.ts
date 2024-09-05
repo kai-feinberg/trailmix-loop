@@ -18,13 +18,6 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   //print deployment address
   log(`Deployer address: ${deployerWallet.address}`);
 
-  // const deployedContract = await deploy("TrailMixManager", {
-  //   from: deployerWallet.address,
-  //   args: [], // Add your constructor arguments inside the array
-  //   log: true,
-  //   autoMine: true,
-  // });
-  
   // log(`🚀 TrailMixManager deployed to: ${deployedContract.address}`);
   // const deployedContract = await deploy("TrailMix", {
   //   from: deployerWallet.address,
