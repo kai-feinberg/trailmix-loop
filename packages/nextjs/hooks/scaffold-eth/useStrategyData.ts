@@ -127,9 +127,6 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
         
         const assetDecimals = 10**tokenData.decimals;
         const price = (stablecoinAddress as string).toLowerCase() === "0x0b2c639c533813f4aa9d7837caf62653d097ff85" ? (10**12) : ethPrice;
-        
-     
-
 
         let thresholdUpdateData: [number, number][] = [];
         if (thresholdUpdates.length >0){
@@ -144,7 +141,8 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
 
         thresholdUpdateData.sort((a, b) => a[0] - b[0]);
 
-        const adjustedThreshold= (Number(tslThreshold) * price / (10 ** 18 * 10 ** (18 - tokenData.decimals)));
+        const adjustedThreshold= (Number(tslThreshold) / 10**18);
+
 
         
         const examplePriceData = [[
@@ -448,9 +446,9 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
         const ercBalUsd = (Number(erc20Balance)*currPrice/ (10**18))
         const usdValue = ercBalUsd + stableBalUsd;
 
-        console.log("deposit value", depVal);
-        console.log("current value", usdValue);
-        console.log("price", currPrice);
+        // console.log("deposit value", depVal);
+        // console.log("current value", usdValue);
+        // console.log("price", currPrice);
 
 
         const strategy: Strategy = {
@@ -476,7 +474,8 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
             priceData: examplePriceData as [number, number][],
             // updateData: [[0,0]]
 
-            updateData: thresholdUpdateData as [number, number][]
+            updateData: thresholdUpdateData as [number, number][],
+            profit: (usdValue - depVal).toString()
           
           }
         

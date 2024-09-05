@@ -45,13 +45,13 @@ const Notification = ({
 }: NotificationProps) => {
   return toast.custom(
     t => (
+      // CHANGE NOTIFICATION STYLE HERE
       <div
-        className={`flex flex-row items-start justify-between max-w-sm rounded-xl shadow-center shadow-accent bg-base-200 p-4 transform-gpu relative transition-all duration-500 ease-in-out space-x-2
-        ${
-          position.substring(0, 3) == "top"
+        className={`flex flex-row items-start justify-between max-w-sm rounded-xl shadow-center shadow-accent bg-base-200 p-4 transform-gpu relative transition-all duration-500 ease-in-out space-x-2 bg-white
+        ${position.substring(0, 3) == "top"
             ? `hover:translate-y-1 ${t.visible ? "top-0" : "-top-96"}`
             : `hover:-translate-y-1 ${t.visible ? "bottom-0" : "-bottom-96"}`
-        }`}
+          }`}
       >
         <div className="leading-[0] self-center">{icon ? icon : ENUM_STATUSES[status]}</div>
         <div className={`overflow-x-hidden break-words whitespace-pre-line ${icon ? "mt-1" : ""}`}>{content}</div>

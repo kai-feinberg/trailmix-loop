@@ -32,6 +32,7 @@ export type Strategy = {
     stableAsset: TokenData;
     updateData: [number, number][];
     priceData: [number, number][];
+    profit: string;
     
   };  
 

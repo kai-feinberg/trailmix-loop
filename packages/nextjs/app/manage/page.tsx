@@ -19,23 +19,17 @@ import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { useState } from "react";
 import DepositPopup from "~~/components/DepositPopup";
 import WithdrawButton from "~~/components/WithdrawButton";
-import StrategyDataUpdater from "~~/components/StrategyDataUpdater";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
-import { useContractRead } from "wagmi";
-import strategyABI from "~~/contracts/strategyABI.json";
 import ClaimsTable from "~~/components/ClaimsTable";
 import exampleActiveStrategies from "~~/components/assets/exampleActiveStrategies.json";
 import exampleClaimableStrategies from "~~/components/assets/exampleClaimableStrategies.json";
 import { LayoutGrid, List } from "lucide-react";
-const stratABI = strategyABI.abi;
 
 type Props = {};
 import { useAccount } from "wagmi";
 import { useGlobalState } from "~~/services/store/store";
-import useTokenData from "~~/hooks/scaffold-eth/useTokenData";
 import { StrategyCard } from "~~/components/StrategyCard";
 import { CreateNew } from "~~/components/CreateNew";
-import { ClaimableCard } from "~~/components/ClaimableCard";
 
 import shallow from "zustand/shallow";
 import { useMemo } from "react";
@@ -45,8 +39,8 @@ const getColumns = (ethPrice: number): ColumnDef<Strategy>[] => [
     accessorKey: "asset",
     header: "Asset",
     cell: ({ row }: { row: any }) => {
-      const price = (row.original.stablecoinAddress as string).toLowerCase() === "0x0b2c639c533813f4aa9d7837caf62653d097ff85" ? 1 * 10 ** 12 : ethPrice;
-      let assetPrice = (row.original.twapPrice * price / (10 ** 18 * 10 ** (18 - row.original.asset.decimals)))
+      let assetPrice;
+      assetPrice = Number(row.original.twapPrice)
       //round assetPrice to 2 decimal places if it is >1 and 4 decimal places if it is <1
       if (assetPrice < 1) {
         assetPrice = Number(assetPrice.toFixed(4))
@@ -129,21 +123,13 @@ const getColumns = (ethPrice: number): ColumnDef<Strategy>[] => [
     header: "Profit",
     cell: ({ row }: { row: any }) => {
 
-      const adjustedProfit = row.original.profitInUsd
-
-      let displayProfit;
-      if (Math.abs(adjustedProfit) < 0.01) {
-        displayProfit = "0.01";
-      } else {
-        displayProfit = Number(adjustedProfit).toFixed(2); // Format to 2 decimal places
-      }
+      const profit = Number(row.original.profit).toFixed(2);
 
 
       return (
         <div className="text-base">
           <p style={{ color: Number(row.original.profit) >= 0 ? 'green' : 'red' }}>
-            {Number(row.original.profit) >= 0 ? `+$${displayProfit}` : `-$${Math.abs(Number(displayProfit))}`}
-            {/* / {Number(row.original.percentProfit) > 0 ? `+${row.original.percentProfit.substring(0, 4)}` : row.original.percentProfit.substring(0, 5)}% */}
+            {Number(profit) >= 0 ? `+$${profit}` : `-$${Math.abs(Number(profit))}`}
 
           </p>
         </div>
@@ -168,9 +154,7 @@ const getColumns = (ethPrice: number): ColumnDef<Strategy>[] => [
 
 
 export default function ManagePage({ }: Props) {
-  // const { strategies, setStrategies } = useGlobalState();
-  // const [activeStrats, setActiveStrats] = useState<Strategy[]>([]);
-  // const [claimableStrats, setClaimableStrats] = useState<Strategy[]>([]);
+  
   const { strategies, setStrategies } = useGlobalState(
     (state) => ({
       strategies: state.strategies,
@@ -232,16 +216,17 @@ export default function ManagePage({ }: Props) {
       </div>
       {cardView && (
         <div className="flex flex-wrap justify-start gap-6">
-          {claimableStrats.map((strategy, index) => (
-            <div key={index} className="w-full sm:w-[calc(100%-12px)] lg:w-[calc(100%-16px)] xl:w-[calc(50%-18px)]">
-              <ClaimableCard strategy={strategy} />
+          {activeStrats.length > 0 ? (
+            activeStrats.map((strategy, index) => (
+              <div key={index} className="w-full sm:w-[calc(100%-12px)] lg:w-[calc(100%-16px)] xl:w-[calc(50%-18px)]">
+                <StrategyCard strategy={strategy} />
+              </div>
+            ))
+          ) : (
+            <div className="w-full text-center">
+              No active strategies
             </div>
-          ))}
-          {activeStrats.map((strategy, index) => (
-            <div key={index} className="w-full sm:w-[calc(100%-12px)] lg:w-[calc(100%-16px)] xl:w-[calc(50%-18px)]">
-              <StrategyCard strategy={strategy} />
-            </div>
-          ))}
+          )}
         </div>
       )}
       {!cardView && (
