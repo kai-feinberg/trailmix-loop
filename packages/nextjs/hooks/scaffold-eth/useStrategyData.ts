@@ -130,13 +130,13 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
 
         let thresholdUpdateData: [number, number][] = [];
         if (thresholdUpdates.length >0){
-          thresholdUpdateData= thresholdUpdates.map(update => [Number(update.args.timestamp), Number(update.args.newThreshold)*price/(10 ** 18 * 10 ** (18 - tokenData.decimals))]);
+          thresholdUpdateData= thresholdUpdates.map(update => [Number(update.args.timestamp), Number(update.args.newThreshold)/10**18]);
         }
         else{
-            thresholdUpdateData.push([Number(deployEvent[0].args.timestamp), Number(tslThreshold)*price/(10 ** 18 * 10 ** (18 - tokenData.decimals))])
+            thresholdUpdateData.push([Number(deployEvent[0].args.timestamp), Number(tslThreshold)/10**18])
         }
 
-        thresholdUpdateData.push([Math.floor(Date.now()/1000), Number(tslThreshold)*price/(10 ** 18 * 10 ** (18 - tokenData.decimals))])
+        thresholdUpdateData.push([Math.floor(Date.now()/1000), Number(tslThreshold)/10**18])
         // thresholdUpdateData.push([Number(fundsDeposited[0].args.timestamp), Number(fundsDeposited[0].args.depositPrice)*(100-Number(trailAmount)/100)/10**12])
 
         thresholdUpdateData.sort((a, b) => a[0] - b[0]);
@@ -446,9 +446,7 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
         const ercBalUsd = (Number(erc20Balance)*currPrice/ (10**18))
         const usdValue = ercBalUsd + stableBalUsd;
 
-        // console.log("deposit value", depVal);
-        // console.log("current value", usdValue);
-        // console.log("price", currPrice);
+        console.log("threshold update data", thresholdUpdateData)
 
 
         const strategy: Strategy = {
@@ -472,16 +470,12 @@ const useStrategyData = (contractAddress: string, onDataFetched: any) => {
             stablecoinBalanceInUsd: stableBalUsd?.toString() ?? '',
             stableAsset: stableAssetData as TokenData,
             priceData: examplePriceData as [number, number][],
-            // updateData: [[0,0]]
 
             updateData: thresholdUpdateData as [number, number][],
             profit: (usdValue - depVal).toString()
           
           }
-        
-        // console.log("strategy: ", strategy);
-        // console.log("profit", profit)
-        // console.log("price data", priceData)
+    
         onDataFetched(strategy);
         }
         catch (e) {

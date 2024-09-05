@@ -27,7 +27,7 @@ const StrategyPriceUpdater: React.FC = () => {
   }, [setStrategies]);
 
   const filteredStrategies = strategies.filter(strategy => 
-    strategy.contractState === "Active" || strategy.contractState === "Claimable"
+    strategy.contractState === "TrailingStop" || strategy.contractState === "LimitBuy"
   );
 
   return (

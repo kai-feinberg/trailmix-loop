@@ -12,21 +12,26 @@ import { PriceChart } from "./PriceChart"
 import { Strategy } from "~~/types/customTypes"
 import DepositPopup from "./DepositPopup"
 import WithdrawButton from "./WithdrawButton"
-import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth"
-import PageTitle from "./PageTitle"
 
 export function StrategyCard({ strategy }: { strategy: Strategy }) {
   const assetData = strategy.asset
-  const ethPrice = useNativeCurrencyPrice()
 
   const profit = Number(strategy.profit).toFixed(2);
 
   let bal = Number(strategy.erc20Balance) / 10 ** assetData.decimals
-  if (bal > 1) {
-    bal = Number(bal.toFixed(2)); // Convert back to number
+  let stableBal = Number(strategy.stablecoinBalance) / 10 ** strategy.stableAsset.decimals
+
+  let displayBal = stableBal > bal ? stableBal : bal;
+  const displaySymbol = stableBal > bal ? strategy.stableAsset.symbol : assetData.symbol;
+
+  
+  if (displayBal > 1) {
+    displayBal = Number(displayBal.toFixed(2)); // Convert back to number
   } else {
-    bal = Number(bal.toFixed(4)); // Convert back to number
+    displayBal = Number(displayBal.toFixed(4)); // Convert back to number
   }
+
+  const statusMessage = strategy.contractState === "TrailingStop" ? "Protecting value" : "Awaiting re-entry";
 
   return (
     <div>
@@ -42,7 +47,7 @@ export function StrategyCard({ strategy }: { strategy: Strategy }) {
               alt="token-image"
             />
             <div className="flex flex-col mt-3">
-              <h1 className="font-medium text-xl">{bal} {assetData.symbol}</h1> {/*amount and asset*/}
+              <h1 className="font-medium text-xl">{displayBal} {displaySymbol}</h1> {/*amount and asset*/}
               <p className="mt-[-5%] text-gray-500">${Number(strategy.balanceInUsd).toFixed(2)} USD</p>
             </div>
 
@@ -60,11 +65,11 @@ export function StrategyCard({ strategy }: { strategy: Strategy }) {
             <Badge variant="outline" className="text-base" >
               Value Deposited: ${(Number(strategy.depositValue)).toFixed(3)}
             </Badge>
-            {/* <Badge variant="outline" className="text-base" >
-                Strategy: {strategy.trailAmount === "10" ? "basic" : strategy.trailAmount === "5" ? "aggressive" : "conservative"}
-              </Badge> */}
             <Badge variant="outline" className="text-base" >
               Duration: {Math.floor((Number(Date.now()) - Number(strategy.dateCreated) * 1000) / 86400000)} days
+            </Badge>
+            <Badge variant="outline" className="text-base" >
+              Status: {statusMessage}
             </Badge>
           </div>
         </div>

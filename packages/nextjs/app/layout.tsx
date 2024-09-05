@@ -61,7 +61,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
             )}>
               <StrategyUpdater />
 
-              {/* <StrategyPriceUpdater /> */}
+              <StrategyPriceUpdater />
               <div className="p-8 w-full" >{children}</div>
             </div>
           </body>

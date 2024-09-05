@@ -25,6 +25,7 @@ const fetchTokenData = async (strategy: Strategy) => {
   };
 
   const response = await axios.request(options);
+  console.log("response", response)
   return response.data.prices;
 };
 
@@ -33,7 +34,7 @@ export const useFetchTokenPriceData = (strategy: Strategy) => {
   return useQuery({
     queryKey: ['strategyPrice', strategy.contractAddress],
     queryFn: () => fetchTokenData(strategy),
-    enabled: strategy.contractState === 'Active' || strategy.contractState === 'Claimable',
+    enabled: strategy.contractState === 'TrailingStop' || strategy.contractState === 'LimitBuy',
     refetchInterval: Infinity, // Refetch every hour
     staleTime: 550000, // Consider data stale after 55 mins
     
