@@ -17,17 +17,16 @@
 
 ## Trading Strategy
 
-Trailmix uses a trailing stop losses to know when to sell your assets. This can be thought of as a safety net that follows your asset as it rises and selling it when it begins to fall. TrailMix will then set a limit order to buy back in when the price reaches the same level. This ensures that you never lose more than a specified percentage of your funds, while still giving you exposure to the upside. It may seem counter intuitive not to buy back in when the price is low but the issues is that the price can always go lower! It is a much safer bet to simply re enter your same position when the markets are healthier.
+Trailmix uses a trailing stop losses to know when to sell your assets. This can be thought of as a safety net that follows your asset as it rises and selling it when it begins to fall. TrailMix will then set a limit order to buy back in when the price reaches the same level.
 
+This ensures that you never lose more than a specified percentage of your funds, while still giving you exposure to the upside. It may seem counter intuitive not to buy back in when the price is low but the issues is that the price can always go lower! It is a much safer bet to simply re enter your same position when the markets are healthier.
 
-![TrailMix Explanation](./packages/nextjs/public/strategy_explanation.png)
-![TrailMix Screenshot](./packages/nextjs/public/combined.png)
-
+![TrailMix Explanation](./packages/nextjs/public/strategy_explanation.png){: .mx-auto}
+![TrailMix Screenshot](./packages/nextjs/public/combined.png){: .mx-auto}
 
 This ensures that you capture the general appreciation of an asset without having to hold through extended downturns. Your portfolio will always be near its all time high so you can withdraw without roundtripping your gains.
 
-![TrailMix Performance](./packages/nextjs/public/strategy_performance.png)
-
+![TrailMix Performance](./packages/nextjs/public/strategy_performance.png){: .mx-auto}
 
 Explore TrailMix backtesting [here](https://trailmix-backtest.vercel.app/)
 
