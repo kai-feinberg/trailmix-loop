@@ -186,15 +186,11 @@ contract TrailMix is ReentrancyGuard {
 		// If contract is in trailing stop state then check if it needs to be updated or executed
 		if (state == ContractState.TrailingStop) {
 			uint256 currentPrice = getTwapPrice();
-			uint256 exactPrice = getExactPrice(s_erc20Token);
 
 			bool triggerSell = false;
 			bool updateThreshold = false;
 			uint256 newThreshold = 0;
 
-			// Calculate 10% price range bounds
-			uint256 lowerBound = (currentPrice * 90) / 100;
-			uint256 upperBound = (currentPrice * 110) / 100;
 			//calculates the old all time high price based on the threshold
 			uint256 oldCurrentPrice = (s_tslThreshold * 100) /
 				(100 - s_trailAmount);
@@ -203,16 +199,16 @@ contract TrailMix is ReentrancyGuard {
 			uint256 minPriceForUpdate = (oldCurrentPrice *
 				(100 + s_granularity)) / 100;
 			//if new price is less than the current threshold then trigger TSL
-			if (exactPrice >= lowerBound && exactPrice <= upperBound) {
-				if (currentPrice < s_tslThreshold) {
-					//trigger TSL
-					triggerSell = true;
-				} else if (currentPrice > minPriceForUpdate) {
-					updateThreshold = true;
-					newThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
-				}
+
+			if (currentPrice < s_tslThreshold) {
+				//trigger TSL
+				triggerSell = true;
+			} else if (currentPrice > minPriceForUpdate) {
+				updateThreshold = true;
+				newThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
 			}
 			return (false, triggerSell, updateThreshold, newThreshold);
+			
 		} else if (state == ContractState.LimitBuy) {
 			uint256 currentPrice = getTwapPrice();
 			bool limitTrigger = false;
