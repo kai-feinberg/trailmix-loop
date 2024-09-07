@@ -17,21 +17,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-// const priceData = [
-//     [1622505600, 35000],
-//     [1622592000, 36000],
-//     [1622678400, 37000],
-//     [1622764800, 38000],
-//     [1622851200, 39000],
-//     // Add more data points as needed
-//   ];
-
-//   // Format the data
-//   const chartData = priceData.map(([timestamp, price]) => ({
-//     timestamp: new Date(timestamp * 1000).toLocaleDateString(),
-//     price,
-//   }));
-
 
 const chartConfig = {
   desktop: {
@@ -44,74 +29,41 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-
 export function PriceChart({ priceData, updateData }: { priceData: [number, number][], updateData: [number, number][] }) {
-  // Format the data
   if (!priceData || !updateData) {
-    return <div>Loading...</div>; // or handle loading/error state appropriately
+    return <div>Loading...</div>;
   }
 
+  updateData = updateData.map(([timestamp, value]) => [timestamp * 1000, value]);
   updateData.sort((a, b) => a[0] - b[0]);
 
-  // Create a map for quick lookup of stop loss values
-  const stopLossMap = new Map(updateData.map(([timestamp, price]) => [
-    new Date(timestamp * 1000).toLocaleDateString(),
-    price
-  ]));
-
-  // Function to interpolate stop loss values
-  const interpolateStopLoss = (date: Date, stopLossMap: Map<string, number>) => {
-    const dateString = date.toLocaleDateString();
-    if (stopLossMap.has(dateString)) {
-      return stopLossMap.get(dateString)!;
-    }
-
-    const dates = Array.from(stopLossMap.keys()).map(d => new Date(d));
-    const prevDate = dates.reduce((prev, curr) =>
-      curr < date && curr > prev ? curr : prev, new Date(0));
-    const nextDate = dates.reduce((next, curr) =>
-      curr > date && curr < next ? curr : next, new Date(8640000000000000));
-
-    if (prevDate.getTime() === 0 || nextDate.getTime() === 8640000000000000) {
-      return null; // Cannot interpolate if date is outside the range
-    }
-
-    const prevValue = stopLossMap.get(prevDate.toLocaleDateString())!;
-    const nextValue = stopLossMap.get(nextDate.toLocaleDateString())!;
-    const totalDays = (nextDate.getTime() - prevDate.getTime()) / (24 * 60 * 60 * 1000);
-    const daysFromPrev = (date.getTime() - prevDate.getTime()) / (24 * 60 * 60 * 1000);
-
-    return prevValue + (nextValue - prevValue) * (daysFromPrev / totalDays);
+  // Function to get the stop loss value from the closest previous update
+  const getStopLossValue = (timestamp: number, updateData: [number, number][]) => {
+    // console.log(timestamp)
+    const previousUpdates = updateData.filter(update => update[0] <= timestamp);
+    if (previousUpdates.length === 0) return null;
+    return previousUpdates[previousUpdates.length - 1][1];
   };
 
-  // Merge and interpolate the data
-  const mergedData = priceData.map(([timestamp, price]) => {
-    const date = new Date(timestamp);
-    return {
-      timestamp: date.toLocaleDateString(),
-      price,
-      stop_loss: interpolateStopLoss(date, stopLossMap)
-    };
-  });
-
-  // console.log("merged data", mergedData)
+  // Merge the data
+  const mergedData = priceData.map(([timestamp, price]) => ({
+    timestamp: new Date(timestamp).toLocaleDateString(),
+    originalTimestamp: timestamp,
+    price,
+    stop_loss: getStopLossValue(timestamp, updateData)
+  }));
 
   const calculateYAxisDomain = (data: any[]) => {
     const allValues = data.flatMap(item => [item.price, item.stop_loss]).filter(val => val != null);
     const dataMin = Math.min(...allValues);
     const dataMax = Math.max(...allValues);
     const range = dataMax - dataMin;
-    const extension = range * 0.15; // 25% extension on each side equals 50% total increase
+    const extension = range * 0.15;
     return [dataMin - extension, dataMax + extension];
   };
   const [yMin, yMax] = calculateYAxisDomain(mergedData);
 
-
-  // console.log("Threshold Update Data: ", thresholdUpdateData.map(update => [new Date(update[0] * 1000).toLocaleString(), update[1]]));
-
-
   return (
-
     <div className="aspect-[16/9] mb-2 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ChartContainer config={chartConfig}>
@@ -134,7 +86,6 @@ export function PriceChart({ priceData, updateData }: { priceData: [number, numb
             />
             <YAxis
               domain={[yMin, yMax]}
-              // domain={calculateYAxisDomain}
               tickLine={false}
               axisLine={false}
               tick={false}
@@ -150,7 +101,7 @@ export function PriceChart({ priceData, updateData }: { priceData: [number, numb
             />
             <Line
               dataKey="stop_loss"
-              type="monotone"
+              type="stepAfter"
               stroke="red"
               strokeWidth={2}
               dot={false}
@@ -160,6 +111,5 @@ export function PriceChart({ priceData, updateData }: { priceData: [number, numb
         </ChartContainer>
       </ResponsiveContainer>
     </div>
-
   )
 }

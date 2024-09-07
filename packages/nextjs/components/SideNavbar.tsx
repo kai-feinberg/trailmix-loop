@@ -30,13 +30,13 @@ export default function SideNavbar({ }: Props) {
     // <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24 bg-slate-600 text-white flex flex-col justify-between">
     <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24 bg-gradient-to-b from-slate-600 to-black text-white flex flex-col justify-between">
       <div className="absolute top-[-1px] mt-3 left-50 w-full">
-        <Logo/>
+        <Logo />
       </div>
 
       <div className="pt-18">
-       
+
         <Nav
-          isCollapsed={ isCollapsed}
+          isCollapsed={isCollapsed}
           links={[
             {
               title: "Dashboard",
@@ -70,8 +70,8 @@ export default function SideNavbar({ }: Props) {
 
 
       <NetworkOptions />
-      <div className="flex flex-col text-base font-semibold text-slate-100 mb-10"> 
-        <a href="https://github.com/kai-feinberg/TrailMixV2" target="_blank" rel="noopener noreferrer" className= "flex m-1 underline"><Github/>Github</a>
+      <div className="flex flex-col text-base font-semibold text-slate-100 mb-10">
+        <a href="https://github.com/kai-feinberg/trailmix-loop" target="_blank" rel="noopener noreferrer" className="flex m-1 underline"><Github />Github</a>
         <p> ❤ Built by Kaifeinberg.eth</p>
       </div>
 
