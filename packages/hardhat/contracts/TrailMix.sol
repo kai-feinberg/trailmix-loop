@@ -103,7 +103,10 @@ contract TrailMix is ReentrancyGuard {
 	 * @param amount The amount of the ERC20 token to deposit.
 	 * @param tslThreshold The initial trailing stop loss threshold as a percentage.
 	 */
-	function deposit(uint256 amount, uint256 tslThreshold) external {
+	function deposit(
+		uint256 amount,
+		uint256 tslThreshold
+	) external onlyManager {
 		if (amount <= 0) {
 			revert InvalidAmount();
 		}
@@ -138,7 +141,7 @@ contract TrailMix is ReentrancyGuard {
 	 * @notice Withdraws the user's funds from the contract.
 	 * @dev Allows withdrawal of either ERC20 tokens or stablecoins
 	 */
-	function withdraw(address token) external {
+	function withdraw(address token) external onlyManager {
 		uint256 withdrawalAmount;
 
 		if (token == s_stablecoin) {
@@ -208,7 +211,6 @@ contract TrailMix is ReentrancyGuard {
 				newThreshold = (currentPrice * (100 - s_trailAmount)) / 100;
 			}
 			return (false, triggerSell, updateThreshold, newThreshold);
-			
 		} else if (state == ContractState.LimitBuy) {
 			uint256 currentPrice = getTwapPrice();
 			bool limitTrigger = false;
